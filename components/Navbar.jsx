@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
-import homeIconDark from "../public/homeIconDark.png";
-import homeIconLight from "../public/homeIconLight.png";
+import homeIconDark from "../public/HomeIconDark.png";
+import homeIconLight from "../public/HomeIconLight.png";
 import editIconDark from "../public/editIconDark.png";
 import editIconLight from "../public/editIconLight.png";
 import Link from "next/link";
