@@ -104,7 +104,7 @@ export default function LandingPage() {
     >
       <div className="relative h-full w-full">
         <div
-          className={`w-full h-[15%] sm:h-[10%] flex items-center justify-center gap-4 px-6 ${
+          className={`w-full h-[10%] flex items-center justify-center gap-4 sm:px-6 p-2 ${
             theme
               ? "bg-[#ffffff] text-[#0a0a0a]"
               : "bg-[#000000] text-[#ebebeb]"
@@ -123,7 +123,7 @@ export default function LandingPage() {
             } focus:outline-none focus:border-blue-500`}
           />
         </div>
-        <div className="sm:h-[90%] h-[85%] float-left w-full overflow-y-auto">
+        <div className="h-[90%] float-left w-full overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-6 p-6">
             {filteredFaculties.length > 0 ? (
               filteredFaculties.map((faculty) => (

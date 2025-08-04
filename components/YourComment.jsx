@@ -120,7 +120,7 @@ export default function YourComment({
               : "bg-green-900 text-green-200"
           } rounded-md opacity-90`}
         >
-          <p className="font-semibold">Comment Updated Successfully!</p>
+          <p className="font-semibold sm:text-[18px] text-[10px]">Comment Updated Successfully!</p>
         </div>
       )}
     </div>

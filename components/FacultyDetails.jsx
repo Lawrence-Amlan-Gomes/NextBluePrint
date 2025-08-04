@@ -307,7 +307,9 @@ export default function FacultyDetails({
                     Go Back
                   </button>
                 </div>
-                <div className="w-[60%] h-full float-left flex justify-center items-center text-[12px] font-bold">Your Comment:</div>
+                <div className="w-[60%] h-full float-left flex justify-center items-center text-[12px] font-bold">
+                  Your Comment:
+                </div>
               </div>
 
               <div className="w-full h-[30%] float-left">
@@ -324,7 +326,7 @@ export default function FacultyDetails({
               </div>
               <div className="w-full h-[40%] float-left">
                 {auth && (
-                  <div className="mt-1 flex flex-col items-center">
+                  <div className="mt-1 flex flex-col items-center relative">
                     <p className="font-semibold mb-1 text-[12px] sm:text-[18px] text-center">
                       {ratingLabel}
                     </p>
@@ -339,20 +341,22 @@ export default function FacultyDetails({
                       onHoverStart={handleHoverStart}
                       onHoverEnd={handleHoverEnd}
                     />
+                    {showRatingSuccess && (
+                      <div
+                        className={`absolute top-0 left-0 w-full h-full flex text-[10px] text-center items-center justify-center z-10 ${
+                          theme
+                            ? "bg-green-100 text-green-800"
+                            : "bg-green-900 text-green-200"
+                        } opacity-100`}
+                      >
+                        <p className="font-semibold">
+                          Rating Updated Successfully!
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-              {showRatingSuccess && (
-                <div
-                  className={`absolute top-0 left-0 w-full h-full flex text-[15px] text-center items-center justify-center z-10 ${
-                    theme
-                      ? "bg-green-100 text-green-800"
-                      : "bg-green-900 text-green-200"
-                  } opacity-90`}
-                >
-                  <p className="font-semibold">Rating Updated Successfully!</p>
-                </div>
-              )}
             </div>
             <div className="w-[35%] h-full float-left flex justify-center items-center">
               <div className="flex flex-col items-center">
