@@ -75,7 +75,7 @@ export default function YourComment({
 
   return (
     <div
-      className={`p-2 sm:rounded-md w-full sm:h-[60px] h-[40px] flex flex-row items-center sm:gap-4 gap-2 relative ${
+      className={`p-2 sm:rounded-md w-full sm:h-[60px] h-full flex flex-row items-center sm:gap-4 gap-2 relative ${
         theme ? "bg-[#f5f5f5]" : "bg-[#1a1a1a]"
       }`}
     >
@@ -89,7 +89,7 @@ export default function YourComment({
             value={newCommentInput}
             onChange={(e) => setNewCommentInput(e.target.value)}
             placeholder="Enter your comment"
-            className={`sm:p-2 p-1 rounded-sm sm:rounded-md sm:border-2 border-[1px] text-[11px] sm:text-[16px] sm:w-[60%] w-[70%] ${
+            className={`sm:p-2 p-1 rounded-sm sm:rounded-md sm:border-2 border-[1px] text-[12px] sm:text-[16px] sm:w-[60%] w-[70%] ${
               theme
                 ? "bg-white text-[#0a0a0a] border-[#cccccc]"
                 : "bg-[#2a2a2a] text-[#ebebeb] border-[#444444]"
@@ -98,7 +98,7 @@ export default function YourComment({
           <button
             onClick={handleUpdateComment}
             disabled={isUpdating || !newCommentInput.trim()}
-            className={`sm:p-2 p-1 rounded-sm sm:rounded-md font-semibold text-[11px] sm:text-[16px] sm:w-[20%] w-[30%] ${
+            className={`sm:p-2 p-1 rounded-sm sm:rounded-md font-semibold text-[12px] sm:text-[16px] sm:w-[20%] w-[30%] ${
               isUpdating || !newCommentInput.trim()
                 ? theme
                   ? "bg-[#dbdbdb] text-[#808080]"
@@ -120,7 +120,7 @@ export default function YourComment({
               : "bg-green-900 text-green-200"
           } rounded-md opacity-90`}
         >
-          <p className="font-semibold sm:text-[18px] text-[10px]">Comment Updated Successfully!</p>
+          <p className="font-semibold sm:text-[18px] text-[12px]">Comment Updated Successfully!</p>
         </div>
       )}
     </div>

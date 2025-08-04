@@ -326,7 +326,7 @@ export default function FacultyDetails({
               </div>
               <div className="w-full h-[40%] float-left">
                 {auth && (
-                  <div className="mt-1 flex flex-col items-center relative">
+                  <div className="flex mt-2 flex-col items-center relative">
                     <p className="font-semibold mb-1 text-[12px] sm:text-[18px] text-center">
                       {ratingLabel}
                     </p>
@@ -395,7 +395,7 @@ export default function FacultyDetails({
             </div>
           </div>
           <div
-            className={`h-[70%] w-full text-[12px] float-left overflow-hidden border-t-[1px] ${
+            className={`h-[70%] w-full text-[13px] float-left overflow-hidden border-t-[1px] ${
               theme
                 ? "bg-[#f5f5f5] border-zinc-300"
                 : "bg-[#1a1a1a] border-zinc-700"
