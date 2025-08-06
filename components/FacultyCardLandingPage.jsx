@@ -4,25 +4,31 @@ import Link from "next/link";
 import { useFaculty } from "@/app/hooks/usefaculty";
 import StarRating from "./StarRating";
 
-export default function FacultyCardLandingPage({ faculty, setClicked }) {
+export default function FacultyCardLandingPage({
+  filteredFaculties,
+  faculty,
+  setClicked,
+}) {
   const { theme } = useTheme();
   const { setFaculty } = useFaculty();
 
   return (
     <div
       onClick={(e) => {
-        setFaculty(faculty);
-        setClicked(true);
+        if (filteredFaculties.length > 0) {
+          setFaculty(faculty);
+          setClicked(true);
+        }
       }}
     >
       <div
-        className={`rounded-lg shadow-lg p-4 flex flex-col items-center cursor-pointer transition-colors duration-200 ${
+        className={`rounded-lg shadow-lg sm:p-4 p-2 flex text-center flex-col items-center cursor-pointer transition-colors duration-200 h-full ${
           theme
             ? "bg-[#ececec] text-[#0a0a0a] border border-zinc-300 hover:bg-[#d5d5d5] hover:border-blue-700"
             : "bg-[#1a1a1a] text-[#f0f0f0] border border-zinc-700 hover:bg-[#333333] hover:border-blue-700"
         }`}
       >
-        <div className="w-[150px] h-[200px] rounded-lg overflow-hidden flex items-center justify-center mb-4">
+        <div className="w-[120px] h-[150px] sm:w-[130px] sm:h-[150px] md:w-[120px] md:h-[150px] lg:w-[140px] lg:h-[180px] xl:w-[180px] xl:h-[220px] 2xl:w-[180px] 2xl:h-[240px] rounded-lg overflow-hidden flex items-center justify-center sm:mb-4 mb-2">
           {faculty.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -44,11 +50,12 @@ export default function FacultyCardLandingPage({ faculty, setClicked }) {
             </svg>
           )}
         </div>
-        <h3 className="text-lg font-semibold mb-2">
+        <h3 className="font-semibold sm:mb-2 mb-1 text-[12px] sm:text-[16px]">
           {faculty.name || "Unknown"}
         </h3>
-        <p className="text-sm mb-2">{faculty.initial}</p>
-        <p className="text-sm mb-2">{faculty.department}</p>
+        <p className="sm:mb-2 mb-1 text-[12px] sm:text-[16px]">
+          {faculty.initial}
+        </p>
       </div>
     </div>
   );

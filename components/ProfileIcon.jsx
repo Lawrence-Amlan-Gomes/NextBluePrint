@@ -18,7 +18,7 @@ const ProfileIcon = () => {
       {auth ? (
         <Link href="/profile">
           <div
-            className={`sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] rounded-full  ${
+            className={`sm:w-[40px] sm:h-[40px] h-[30px] w-[30px] rounded-full  ${
               theme
                 ? "bg-[#b8b8b8] hover:bg-[#b2b2b2] text-black"
                 : "bg-[#1f1f1f] hover:bg-[#272727] text-zinc-300"
