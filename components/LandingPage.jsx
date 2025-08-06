@@ -7,16 +7,24 @@ import { useEffect, useState } from "react";
 import FacultyCardLandingPage from "./FacultyCardLandingPage";
 import FacultyDetails from "./FacultyDetails";
 import Footer from "./Footer";
+import { useFaculty } from "@/app/hooks/usefaculty";
 
 export default function LandingPage() {
   const { theme } = useTheme();
   const { auth } = useAuth();
+  const {
+    allFacultyCommentRating,
+    setAllFacultyCommentRating,
+    firstTime,
+    setFirstTime,
+    faculties,
+    setFaculties,
+    filteredFaculties,
+    setFilteredFaculties,
+  } = useFaculty();
   const router = useRouter();
-  const [faculties, setFaculties] = useState([]);
-  const [filteredFaculties, setFilteredFaculties] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [clicked, setClicked] = useState(false);
-  const [allFacultyCommentRating, setAllFacultyCommentRating] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,8 +80,11 @@ export default function LandingPage() {
         console.error("Error fetching data:", error);
       }
     };
-    fetchData();
-  }, []);
+    if (firstTime) {
+      fetchData();
+      setFirstTime(false);
+    }
+  }, [firstTime, setAllFacultyCommentRating, setFaculties, setFilteredFaculties, setFirstTime]);
 
   useEffect(() => {
     const filtered = faculties.filter(
@@ -82,7 +93,7 @@ export default function LandingPage() {
         faculty.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredFaculties(filtered);
-  }, [searchQuery, faculties]);
+  }, [searchQuery, faculties, setFilteredFaculties]);
 
   useEffect(() => {
     if (clicked && !auth) {
