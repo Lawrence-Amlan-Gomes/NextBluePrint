@@ -26,6 +26,13 @@ export default function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [clicked, setClicked] = useState(false);
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!auth) {
+      router.push("/login");
+    }
+  }, [auth, router]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -99,7 +106,7 @@ export default function LandingPage() {
   }, [searchQuery, faculties, setFilteredFaculties]);
 
   useEffect(() => {
-    if (clicked && !auth) {
+    if (!auth) {
       router.push("/login");
     }
   }, [clicked, auth, router]);
@@ -181,9 +188,7 @@ export default function LandingPage() {
           : "bg-[#000000] text-[#ebebeb] relative"
       }`}
     >
-      <FacultyDetails
-        setClicked={setClicked}
-      />
+      <FacultyDetails setClicked={setClicked} />
     </div>
   );
 }
