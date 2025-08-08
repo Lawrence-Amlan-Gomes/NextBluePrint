@@ -30,7 +30,7 @@ export default function FacultyCardLandingPage({
               : "bg-[#1a1a1a] text-[#f0f0f0] border border-zinc-700 hover:bg-[#333333] hover:border-blue-700"
           }`}
         >
-          <div className="w-[120px] h-[120px] sm:w-[130px] sm:h-[130px] md:w-[120px] md:h-[120px] lg:w-[140px] lg:h-[140px] xl:w-[180px] xl:h-[180px] rounded-lg overflow-hidden flex items-center justify-center sm:mb-4 mb-2">
+          <div className="w-[120px] h-[140px] sm:w-[130px] sm:h-[130px] md:w-[120px] md:h-[120px] lg:w-[140px] lg:h-[140px] xl:w-[180px] xl:h-[180px] rounded-lg overflow-hidden flex items-center justify-center sm:mb-4 mb-2">
             {faculty.photo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -68,7 +68,7 @@ export default function FacultyCardLandingPage({
           }`}
         >
           <motion.div
-            className="w-[120px] h-[120px] sm:w-[130px] sm:h-[130px] md:w-[120px] md:h-[120px] lg:w-[140px] lg:h-[140px] xl:w-[180px] xl:h-[180px] rounded-lg overflow-hidden flex items-center justify-center sm:mb-4 mb-2"
+            className="w-[120px] h-[140px] sm:w-[130px] sm:h-[130px] md:w-[120px] md:h-[120px] lg:w-[140px] lg:h-[140px] xl:w-[180px] xl:h-[180px] rounded-lg overflow-hidden flex items-center justify-center sm:mb-4 mb-2"
             animate={{
               // opacity: [0.5, 1, 0.5],
               backgroundColor: theme
