@@ -516,7 +516,7 @@ const EditFaculty = () => {
                   </svg>
                 )}
               </div>
-              <h3 className="text-lg font-semibold mt-2">
+              <h3 className="text-lg text-center font-semibold mt-2">
                 {selectedFaculty.name || "Unknown"}
               </h3>
               <p className="text-sm">{selectedFaculty.initial}</p>

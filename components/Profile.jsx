@@ -51,7 +51,7 @@ const Profile = () => {
 
   return auth ? (
     <div
-      className={`h-full w-full sm:p-0 p-[5%] overflow-y-auto lg:overflow-hidden lg:flex lg:justify-center lg:items-center ${
+      className={`h-full w-full overflow-y-auto lg:overflow-hidden lg:flex lg:justify-center lg:items-center ${
         theme ? "bg-[#ffffff] text-[#0a0a0a]" : "bg-[#000000] text-[#ebebeb]"
       }`}
     >
@@ -64,10 +64,10 @@ const Profile = () => {
           <ProfilePic />
           {auth ? (
             <>
-              <div className="w-full mt-5 mb-5 flex items-center justify-center font-bold text-[35px]">
+              <div className="w-full sm:mt-5 sm:mb-5 my-2 text-[18px] sm:text-[25px] flex items-center justify-center font-bold">
                 {isEditing ? (
                   <input
-                    className={`bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none text-center rounded-lg w-full p-3`}
+                    className={`bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none text-center rounded-lg w-[70%] sm:w-full p-1 sm:p-3`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -75,16 +75,16 @@ const Profile = () => {
                   <div>{name}</div>
                 )}
               </div>
-              <div className="w-full mt-5 mb-5 flex items-center justify-center">
+              <div className="w-full sm:mt-5 sm:mb-5 my-2 text-[12px] sm:text-[20px] flex items-center justify-center">
                 {auth.email}
               </div>
-              <div className="w-full mt-5 mb-5 flex items-center justify-center">
+              <div className="w-full sm:mt-5 sm:mb-5 my-2 text-[12px] sm:text-[20px] flex items-center justify-center">
                 Subscription: {auth.paymentType}
               </div>
-              <div className="w-full mt-5 mb-5 flex items-center justify-center">
+              <div className="w-full sm:mt-5 sm:mb-5 my-2 text-[12px] sm:text-[20px] flex items-center justify-center">
                 {isEditing ? (
                   <input
-                    className="bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none rounded-lg break-words w-full text-center p-3"
+                    className="bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none rounded-lg break-words text-center w-[70%] sm:w-full p-1 sm:p-3"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                   />
@@ -92,10 +92,10 @@ const Profile = () => {
                   <div className="break-words w-full text-center">{bio}</div>
                 )}
               </div>
-              <div className="w-full mt-5 mb-5 flex items-center justify-center">
+              <div className="w-full sm:mt-5 sm:mb-5 my-2 text-[12px] sm:text-[20px] flex items-center justify-center">
                 {isEditing ? (
                   <input
-                    className="bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none text-center rounded-lg w-full p-3"
+                    className="bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none text-center rounded-lg w-[70%] sm:w-full p-1 sm:p-3"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
@@ -103,12 +103,12 @@ const Profile = () => {
                   <div>{phone}</div>
                 )}
               </div>
-              <div className="w-full mt-5 mb-5 flex items-center justify-center">
+              <div className="w-full mt-5 mb-5 flex text-[13px] sm:text-[18px] items-center justify-center">
                 <button
                   onClick={handleClick}
                   className={`${
                     isEditing ? "text-green-700" : "text-blue-700"
-                  } bg-[#161616] p-3 rounded-lg hover:bg-[#202020] w-full tracking-wider ${
+                  } bg-[#161616] sm:p-3 py-2 px-5 w-[70%] sm:w-full rounded-lg hover:bg-[#202020] tracking-wider ${
                     theme
                       ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
                       : "bg-[#161616] hover:bg-[#202020]"
@@ -120,7 +120,7 @@ const Profile = () => {
               <div className="w-full mt-5 mb-5 flex items-center justify-center">
                 <Link href="/changePassword" className="w-full">
                   <button
-                    className={`p-3 w-full text-purple-600 tracking-wider text-[18px] py-2 px-5 shadow-lg rounded-lg ${
+                    className={`sm:p-3 p-1 w-[70%] text-[13px] sm:text-[18px] sm:w-full text-purple-600  tracking-wider py-2 px-5 shadow-lg rounded-lg ${
                       theme
                         ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
                         : "bg-[#161616] hover:bg-[#202020]"
@@ -133,7 +133,7 @@ const Profile = () => {
               <div className="w-full mt-5 mb-5 flex items-center justify-center">
                 <button
                   onClick={logout}
-                  className={`p-3 w-full text-red-600 tracking-wider text-[18px] py-2 px-5 shadow-lg rounded-lg ${
+                  className={`sm:p-3 p-1 w-[70%] text-[13px] sm:text-[18px] sm:w-full text-red-600 tracking-wider py-2 px-5 shadow-lg rounded-lg ${
                     theme
                       ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
                       : "bg-[#161616] hover:bg-[#202020]"

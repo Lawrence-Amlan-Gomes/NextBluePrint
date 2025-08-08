@@ -52,10 +52,10 @@ export default function FacultyCardLandingPage({
               </svg>
             )}
           </div>
-          <h3 className="font-semibold sm:mb-2 mb-1 text-[12px] sm:text-[16px]">
+          <h3 className="font-semibold sm:mb-2 mb-1 text-[12px] sm:text-[16px] w-[120px] sm:w-[130px] md:w-[120px] lg:w-[140px] xl:w-[180px]">
             {faculty.name || "Unknown"}
           </h3>
-          <p className="sm:mb-2 mb-1 text-[12px] sm:text-[16px]">
+          <p className="sm:mb-2 mb-1 text-[12px] sm:text-[16px] w-[120px] sm:w-[130px] md:w-[120px] lg:w-[140px] xl:w-[180px]">
             {faculty.initial}
           </p>
         </div>
@@ -88,7 +88,7 @@ export default function FacultyCardLandingPage({
             </svg>
           </motion.div>
           <motion.h3
-            className={`font-semibold h-[25px] rounded-md w-full sm:mb-2 mb-1 ${
+            className={`font-semibold h-[25px] w-[120px] sm:w-[130px] md:w-[120px] lg:w-[140px] xl:w-[180px] rounded-md sm:mb-2 mb-1 ${
               theme ? "text-[#0a0a0a]" : "text-[#f0f0f0]"
             }`}
             animate={{
@@ -100,7 +100,7 @@ export default function FacultyCardLandingPage({
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           ></motion.h3>
           <motion.p
-            className={`sm:mb-2 mb-1 h-[25px] rounded-md w-full ${
+            className={`sm:mb-2 mb-1 h-[25px] w-[120px] sm:w-[130px] md:w-[120px] lg:w-[140px] xl:w-[180px] rounded-md ${
               theme ? "text-[#0a0a0a]" : "text-[#f0f0f0]"
             }`}
             animate={{

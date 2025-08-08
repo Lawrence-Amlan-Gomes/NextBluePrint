@@ -84,7 +84,7 @@ export default function ProfilePic() {
     <div className="w-full mt-5 relative">
       <div className="w-full flex items-center justify-center relative">
         <div
-          className="bg-white w-[150px] h-[150px] rounded-full overflow-hidden flex items-center justify-center relative cursor-pointer"
+          className="bg-white sm:w-[150px] w-[100px] sm:h-[150px] h-[100px] rounded-full overflow-hidden flex items-center justify-center relative cursor-pointer"
           onClick={() => setEditPic((prev) => !prev)}
         >
           {isUploading ? ( // 🔄 Show uploading message
@@ -95,7 +95,7 @@ export default function ProfilePic() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={image} alt="profilepic" className="w-full h-full object-cover" />
           ) : auth?.name ? (
-            <div className="w-full h-full flex justify-center items-center text-[100px] font-bold text-black">
+            <div className="w-full h-full flex justify-center items-center text-[50px] sm:text-[100px] font-bold text-black">
               {auth.name.charAt(0)}
             </div>
           ) : null}
