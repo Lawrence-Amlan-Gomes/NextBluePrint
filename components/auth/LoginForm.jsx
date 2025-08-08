@@ -2,18 +2,24 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import EachField from "./EachField";
-import { performLogin } from "@/app/actions";
+import { performLogin, getAllUsers2, signInWithGoogle } from "@/app/actions";
 import { useAuth } from "@/app/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/hooks/useTheme";
+import Image from "next/image";
+import googleIcon from "../../public/googleIcon.png";
+import { useSession } from "next-auth/react";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const { theme } = useTheme();
-  const { setAuth } = useAuth();
+  const { setAuth, googleAuth } = useAuth();
   const router = useRouter();
   const [isTyping, setIsTyping] = useState(true);
   const [email, setEmail] = useState("");
+  const [wantTo, setWantTo] = useState(false);
   const [mainError, setMainError] = useState({
     isError: false,
     error: "Email or password is incorrect",
@@ -84,6 +90,34 @@ const LoginForm = () => {
       });
     }
   };
+
+  const handleGoogleSignIn = async () => {
+    if (session?.user) {
+      setIsLoadingGoogle(true);
+      try {
+        const users = await getAllUsers2();
+        const matchedUser = users.find(
+          (user) => user.email === session.user.email
+        );
+
+        if (matchedUser) {
+          setAuth(matchedUser);
+          router.push("/");
+        } else {
+          router.push("/register");
+        }
+      } catch (error) {
+        console.error("Error checking users:", error);
+        setMainError({
+          isError: true,
+          error: "Something went wrong while checking user",
+        });
+      } finally {
+        setIsLoadingGoogle(false);
+      }
+    }
+  };
+
   return (
     <div
       onKeyDown={(event) => {
@@ -155,13 +189,41 @@ const LoginForm = () => {
         ) : (
           <></>
         )}
+
         <button
           onClick={submitForm}
           className={`text-[18px] text-white cursor-pointer rounded-lg mt-10 py-2 px-6  ${"bg-green-800 hover:bg-green-700"}`}
         >
           {isLoading ? `Logging...` : `Login`}
         </button>
-        <p className="mt-10 text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] xl:text-[24px] 2xl:text-[26px]">
+        <div
+          className={
+            "float-left w-full overflow-hidden flex mb-8 items-center justify-center"
+          }
+        >
+          <button
+            onClick={handleGoogleSignIn}
+            className={`text-[16px] flex items-center gap-4 h-[60px] cursor-pointer w-[270px] rounded-md mt-10 py-2 px-6 bg-blue-800 hover:bg-blue-700 text-white`}
+          >
+            <div className="h-full float-left flex justify-center items-center">
+              <div className="h-[50px] w-[50px] relative">
+                {" "}
+                <Image
+                  priority
+                  src={googleIcon}
+                  alt={"Google Icon"}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="h-full float-left text-center flex justify-center items-center">
+              <div>{isLoadingGoogle ? `Logging...` : `Log in with Google`}</div>
+            </div>
+          </button>
+        </div>
+        <p className="mt-10 text-[16px] xl:text-[20px] 2xl:text-[26px]">
           No Account?{" "}
           <Link href="/register" className="text-blue-600 hover:text-blue-500">
             Register

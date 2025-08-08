@@ -1,5 +1,5 @@
 "use server";
-
+import { signIn, auth } from "../auth";
 import { revalidatePath } from "next/cache";
 import { dbConnect } from "@/services/mongo";
 import {
@@ -15,7 +15,7 @@ import {
   updateFaculty,
   deleteFaculty,
   changePhotoFaculty,
-  updateUserComment
+  updateUserComment,
 } from "@/db/queries";
 import { redirect } from "next/navigation";
 
@@ -25,6 +25,10 @@ async function registerUser(formData) {
   redirect("/login");
 }
 
+async function signInWithGoogle() {
+  const response = await signIn("google"); // Prevent automatic redirect
+  return response; // Return the response object
+}
 async function callCreateFaculty(formData) {
   await dbConnect();
   const created = await createFaculty(formData);
@@ -155,5 +159,6 @@ export {
   callUpdateFaculty,
   callDeleteFaculty,
   callChangePhotoFaculty,
-  callUpdateUserComment
+  callUpdateUserComment,
+  signInWithGoogle,
 };

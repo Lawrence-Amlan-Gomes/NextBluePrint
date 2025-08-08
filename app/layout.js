@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "./providers/AuthProvider";
+import { SessionProvider } from "next-auth/react";
 
 import { dbConnect } from "@/services/mongo";
 import ThemeProvider from "./providers/ThemeProvider";
@@ -19,18 +20,20 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
-          <FacultyProvider>
-            <AuthProvider>
-              <div className="h-screen overflow-hidden w-full">
-                <Navbar />
-                <div className="sm:h-[100%] h-[92%] sm:w-[93%] w-full float-left overflow-hidden">
-                  {children}
+        <SessionProvider>
+          <ThemeProvider>
+            <FacultyProvider>
+              <AuthProvider>
+                <div className="h-screen overflow-hidden w-full">
+                  <Navbar />
+                  <div className="sm:h-[100%] h-[92%] sm:w-[93%] w-full float-left overflow-hidden">
+                    {children}
+                  </div>
                 </div>
-              </div>
-            </AuthProvider>
-          </FacultyProvider>
-        </ThemeProvider>
+              </AuthProvider>
+            </FacultyProvider>
+          </ThemeProvider>{" "}
+        </SessionProvider>
       </body>
     </html>
   );

@@ -1,13 +1,22 @@
 "use client";
-import { getAllUsers2, registerUser } from "@/app/actions";
+import { getAllUsers2, registerUser, signInWithGoogle } from "@/app/actions";
+import { useAuth } from "@/app/hooks/useAuth";
 import { useTheme } from "@/app/hooks/useTheme";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import googleIcon from "../../public/googleIcon.png";
 import EachField from "./EachField";
 
 const RegistrationForm = () => {
   const { theme } = useTheme();
+  const router = useRouter();
+  const { googleAuth, setGoogleAuth } = useAuth();
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [name, setName] = useState("");
   const [noError, setNoError] = useState(false);
   const [nameError, setNameError] = useState({
@@ -27,8 +36,40 @@ const RegistrationForm = () => {
     error: "Your password must be at least 8 characters",
   });
 
+  // Fetch all emails once on component mount
   useEffect(() => {
-    if (name == "") {
+    const fetchEmails = async () => {
+      try {
+        setIsLoadingGoogle(true);
+        const users = await getAllUsers2({});
+        const emails = users.map((user) => user.email);
+        setAllEmails(emails);
+        setIsLoadingGoogle(false);
+      } catch (error) {
+        console.error("Failed to fetch emails:", error);
+        setEmailError({
+          iserror: true,
+          error: "Failed to verify email availability",
+        });
+      }
+    };
+    fetchEmails();
+  }, []);
+
+  // Set Google auth data from session
+  useEffect(() => {
+    if (session?.user) {
+      setGoogleAuth({
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      });
+    }
+  }, [session, setGoogleAuth]);
+
+  // Validate name
+  useEffect(() => {
+    if (name === "") {
       setNameError({ ...nameError, iserror: true });
     } else {
       setNameError({ ...nameError, iserror: false });
@@ -36,24 +77,16 @@ const RegistrationForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
+  // Validate email
   useEffect(() => {
-    const setAllEmailsInArray = async () => {
-      const Emails = [];
-      const users = await getAllUsers2({ email: email });
-      for (let user of users) {
-        Emails.push(user.email);
-      }
-      setAllEmails(Emails);
-    };
-    setAllEmailsInArray();
-    if (email == "") {
+    if (email === "") {
       setEmailError({ iserror: true, error: "Email is required" });
     } else if (email !== email.toLowerCase()) {
       setEmailError({
         iserror: true,
         error: "Email must be in lowercase letters",
       });
-    } else if (email.slice(-10) != "@gmail.com") {
+    } else if (email.slice(-10) !== "@gmail.com") {
       setEmailError({
         iserror: true,
         error: "Use @gmail.com as your email format",
@@ -67,22 +100,110 @@ const RegistrationForm = () => {
       setEmailError({ ...emailError, iserror: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email]);
+  }, [email, allEmails]);
 
-  if (firstTimeEmailCheck) {
-    setTimeout(() => {
-      if (allEmails.includes(email)) {
+  // Handle first-time email check
+  useEffect(() => {
+    if (firstTimeEmailCheck && allEmails.length > 0) {
+      setTimeout(() => {
+        if (allEmails.includes(email)) {
+          setEmailError({
+            iserror: true,
+            error: "This email is already taken",
+          });
+        }
+        setFirstTimeEmailCheck(false);
+      }, 3000);
+    }
+  }, [allEmails, email, firstTimeEmailCheck]);
+
+  // Handle Google registration
+  useEffect(() => {
+    const registerGoogleUser = async () => {
+      // Ensure googleAuth.email exists, allEmails is populated, and no ongoing loading
+      if (!googleAuth.email || isLoadingGoogle || allEmails.length === 0) {
+        return;
+      }
+
+      // Check if email is already registered
+      if (allEmails.includes(googleAuth.email)) {
         setEmailError({
           iserror: true,
-          error: "This email is already taken",
+          error: "This Google email is already registered",
         });
-      } else {
-        setEmailError({ ...emailError, iserror: true });
+        // Show confirmation popup
+        const goToLogin = confirm(
+          "Your Google Email is already registered. Do you want to go to Login?"
+        );
+        if (goToLogin) {
+          router.push("/login");
+        } else {
+          // Reset googleAuth to allow re-authentication
+          setGoogleAuth({ name: "", email: "", image: "" });
+        }
+        return;
       }
-      setFirstTimeEmailCheck(false);
-    }, 3000);
-  }
 
+      setIsLoadingGoogle(true);
+      try {
+        const registered = await registerUser({
+          name: googleAuth.name || "Google User",
+          email: googleAuth.email,
+          password: "google-authenticated",
+          phone: "Phone",
+          photo: "",
+          bio: "Bio",
+          paymentType: "Free",
+          comment: [{ initial: "f1", comment: "", stars: 0 }],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isAdmin: false,
+          absenceFaculty: "",
+        });
+
+        if (registered) {
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Google registration failed:", error);
+        if (error.message.includes("E11000")) {
+          setEmailError({
+            iserror: true,
+            error: "This Google email is already registered",
+          });
+          // Show confirmation popup again in case of race condition
+          const goToLogin = confirm(
+            "Your Google Email is already registered. Do you want to go to Login?"
+          );
+          if (goToLogin) {
+            router.push("/login");
+          } else {
+            setGoogleAuth({ name: "", email: "", image: "" });
+          }
+        } else {
+          // Handle other potential errors
+          setEmailError({
+            iserror: true,
+            error: "Registration failed. Please try again.",
+          });
+        }
+      } finally {
+        setIsLoadingGoogle(false);
+      }
+    };
+
+    registerGoogleUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [googleAuth.email, allEmails, router, setGoogleAuth]);
+
+  // Handle Google sign-in
+  const handleGoogleSignIn = async () => {
+    if (!googleAuth.email && !isLoadingGoogle) {
+      await signInWithGoogle();
+    }
+  };
+
+  // Validate password
   useEffect(() => {
     if (password.length < 8) {
       setPasswordError({
@@ -95,38 +216,46 @@ const RegistrationForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [password]);
 
+  // Check form validity
   useEffect(() => {
-    if (nameError.iserror == false && emailError.iserror == false) {
-      if (passwordError.iserror == false) {
-        setNoError(true);
-      } else {
-        setNoError(false);
-      }
-    } else {
-      setNoError(false);
-    }
+    setNoError(
+      !nameError.iserror && !emailError.iserror && !passwordError.iserror
+    );
   }, [emailError.iserror, nameError.iserror, passwordError.iserror]);
 
+  // Handle form submission
   const submitForm = async () => {
     if (noError) {
       const sureSubmit = confirm("Are you sure to Register?");
       if (sureSubmit) {
         setIsLoading(true);
-        let registered = await registerUser({
-          name: name,
-          email: email,
-          password: password,
-          phone: "Phone",
-          photo: "",
-          bio: "Bio",
-          paymentType: "Free",
-          comment: [{ initial: "f1", comment: "", stars: 0 }],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isAdmin: false,
-          absenceFaculty: "",
-        });
-        if (registered) {
+        try {
+          const registered = await registerUser({
+            name: name,
+            email: email,
+            password: password,
+            phone: "Phone",
+            photo: "",
+            bio: "Bio",
+            paymentType: "Free",
+            comment: [{ initial: "f1", comment: "", stars: 0 }],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isAdmin: false,
+            absenceFaculty: "",
+          });
+          if (registered) {
+            router.push("/login");
+          }
+        } catch (error) {
+          console.error("Registration failed:", error);
+          if (error.message.includes("E11000")) {
+            setEmailError({
+              iserror: true,
+              error: "This email is already registered",
+            });
+          }
+        } finally {
           setIsLoading(false);
         }
       }
@@ -271,7 +400,7 @@ const RegistrationForm = () => {
           />
           <button
             onClick={submitForm}
-            className={`text-[18px] cursor-pointer rounded-md mt-10 py-2 px-6 shadow-md ${
+            className={`text-[18px] cursor-pointer rounded-md mt-10 py-2 px-6 ${
               noError
                 ? "bg-green-800 hover:bg-green-700 text-white"
                 : theme
@@ -282,9 +411,37 @@ const RegistrationForm = () => {
             {isLoading ? `Registering...` : `Register`}
           </button>
         </div>
-
+        <div
+          className={
+            "float-left w-full overflow-hidden flex items-center justify-center"
+          }
+        >
+          <button
+            onClick={handleGoogleSignIn}
+            className={`text-[16px] flex items-center gap-4 h-[60px] cursor-pointer w-[270px] rounded-md mt-10 py-2 px-6 bg-blue-800 hover:bg-blue-700 text-white`}
+          >
+            <div className="h-full float-left flex justify-center items-center">
+              <div className="h-[50px] w-[50px] relative">
+                {" "}
+                <Image
+                  priority
+                  src={googleIcon}
+                  alt={"Google Icon"}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="h-full float-left text-center flex justify-center items-center">
+              <div>
+                {isLoadingGoogle ? `Registering...` : `Sign in with Google`}
+              </div>
+            </div>
+          </button>
+        </div>
         <div className={"float-left w-full overflow-hidden"}>
-          <p className="mt-10 text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] xl:text-[24px] 2xl:text-[26px]">
+          <p className="mt-10 text-[16px] xl:text-[20px] 2xl:text-[26px]">
             Already Have An Account?{" "}
             <Link href="/login" className="text-blue-600 hover:text-blue-500">
               Login

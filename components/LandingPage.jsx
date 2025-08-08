@@ -80,11 +80,14 @@ export default function LandingPage() {
         console.error("Error fetching data:", error);
       }
     };
-    if (firstTime) {
-      fetchData();
-      setFirstTime(false);
-    }
-  }, [firstTime, setAllFacultyCommentRating, setFaculties, setFilteredFaculties, setFirstTime]);
+    fetchData();
+  }, [
+    firstTime,
+    setAllFacultyCommentRating,
+    setFaculties,
+    setFilteredFaculties,
+    setFirstTime,
+  ]);
 
   useEffect(() => {
     const filtered = faculties.filter(
@@ -154,7 +157,7 @@ export default function LandingPage() {
             ) : (
               Array.from({ length: 50 }, (_, index) => ({
                 initial: `F${index + 1}`,
-                name: `Faculty Member ${index + 1}`,
+                name: "animate",
                 department: "General Studies",
                 photo: null,
               })).map((faculty) => (
@@ -180,7 +183,6 @@ export default function LandingPage() {
     >
       <FacultyDetails
         setClicked={setClicked}
-        allFacultyCommentRating={allFacultyCommentRating}
       />
     </div>
   );

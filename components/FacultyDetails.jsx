@@ -7,12 +7,9 @@ import StarRating from "./StarRating";
 import YourComment from "./YourComment";
 import { useRouter } from "next/navigation";
 
-export default function FacultyDetails({
-  setClicked,
-  allFacultyCommentRating,
-}) {
+export default function FacultyDetails({ setClicked }) {
   const { theme } = useTheme();
-  const { faculty } = useFaculty();
+  const { faculty, allFacultyCommentRating } = useFaculty();
   const { auth, setAuth } = useAuth();
   const router = useRouter();
   const [yourComment, setYourComment] = useState("");
@@ -21,6 +18,7 @@ export default function FacultyDetails({
   const [showRatingSuccess, setShowRatingSuccess] = useState(false);
   const [initialRating, setInitialRating] = useState(0);
   const [ratingLabel, setRatingLabel] = useState("Your Rating");
+  const [facultyRating, setFacultyRating] = useState(0); // State to hold facultyRating
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -75,12 +73,16 @@ export default function FacultyDetails({
     }
   }, [auth, faculty]);
 
-  // Process others' comments
+  // Process others' comments and compute facultyRating
   useEffect(() => {
-    if (faculty?.initial && allFacultyCommentRating?.length > 0) {
+    if (faculty?.initial && Array.isArray(allFacultyCommentRating)) {
       const facultyData = allFacultyCommentRating.find(
         (item) => item.initial === faculty.initial.toUpperCase()
       );
+
+      // Compute facultyRating
+      const rating = facultyData?.stars || 0;
+      setFacultyRating(rating);
 
       if (facultyData?.comment && auth) {
         const othersCommentData = facultyData.comment
@@ -95,6 +97,7 @@ export default function FacultyDetails({
       }
     } else {
       setOthersComment([]);
+      setFacultyRating(0); // Default to 0 if no data
     }
   }, [faculty, allFacultyCommentRating, auth]);
 
@@ -125,16 +128,13 @@ export default function FacultyDetails({
     console.log("Rating label set to: Your Rating");
   };
 
-  const facultyRating =
-    allFacultyCommentRating.find(
-      (item) => item.initial === faculty?.initial?.toUpperCase()
-    )?.stars || 0;
-
   console.log(
     "FacultyDetails rendering, initialRating:",
     initialRating,
     "ratingLabel:",
-    ratingLabel
+    ratingLabel,
+    "facultyRating:",
+    facultyRating
   );
 
   return (
@@ -247,7 +247,7 @@ export default function FacultyDetails({
               {faculty?.courses?.join(", ") || "No courses listed"}
             </p>
             <div className="flex justify-center items-center mt-2">
-              <StarRating rating={facultyRating} />
+              {facultyRating != null && <StarRating rating={facultyRating} />}
             </div>
             {auth && (
               <div className="mt-10 flex flex-col items-center">
@@ -389,7 +389,7 @@ export default function FacultyDetails({
                   {faculty?.initial || "N/A"}
                 </p>
                 <div className="flex justify-center items-center">
-                  <StarRating rating={facultyRating} />
+                  {facultyRating != null && <StarRating rating={facultyRating} />}
                 </div>
               </div>
             </div>

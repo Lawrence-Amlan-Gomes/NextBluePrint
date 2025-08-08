@@ -7,8 +7,6 @@ import {
   replaceMongoIdInObject,
 } from "@/utils/data-util";
 
-
-
 async function getAllUsers() {
   const allUsers = await userModel.find().lean();
   return replaceMongoIdInArray(allUsers);
@@ -89,7 +87,6 @@ async function changePhotoFaculty(initial, photo) {
     )
 }
 
-
 export {
   createUser,
   findUserByCredentials,
@@ -103,5 +100,5 @@ export {
   updateFaculty,
   deleteFaculty,
   changePhotoFaculty,
-  updateUserComment
+  updateUserComment,
 };
