@@ -120,30 +120,25 @@ const RegistrationForm = () => {
   // Handle Google registration
   useEffect(() => {
     const registerGoogleUser = async () => {
-      // Ensure googleAuth.email exists, allEmails is populated, and no ongoing loading
       if (!googleAuth.email || isLoadingGoogle || allEmails.length === 0) {
         return;
       }
-
-      // Check if email is already registered
+      console.log("Checking Google auth:", googleAuth.email, allEmails);
       if (allEmails.includes(googleAuth.email)) {
         setEmailError({
           iserror: true,
           error: "This Google email is already registered",
         });
-        // Show confirmation popup
-        const goToLogin = confirm(
+        const goToLogin = window.confirm(
           "Your Google Email is already registered. Do you want to go to Login?"
         );
         if (goToLogin) {
           router.push("/login");
         } else {
-          // Reset googleAuth to allow re-authentication
           setGoogleAuth({ name: "", email: "", image: "" });
         }
         return;
       }
-
       setIsLoadingGoogle(true);
       try {
         const registered = await registerUser({
@@ -160,7 +155,6 @@ const RegistrationForm = () => {
           isAdmin: false,
           absenceFaculty: "",
         });
-
         if (registered) {
           router.push("/login");
         }
@@ -171,8 +165,7 @@ const RegistrationForm = () => {
             iserror: true,
             error: "This Google email is already registered",
           });
-          // Show confirmation popup again in case of race condition
-          const goToLogin = confirm(
+          const goToLogin = window.confirm(
             "Your Google Email is already registered. Do you want to go to Login?"
           );
           if (goToLogin) {
@@ -181,7 +174,6 @@ const RegistrationForm = () => {
             setGoogleAuth({ name: "", email: "", image: "" });
           }
         } else {
-          // Handle other potential errors
           setEmailError({
             iserror: true,
             error: "Registration failed. Please try again.",
@@ -191,9 +183,8 @@ const RegistrationForm = () => {
         setIsLoadingGoogle(false);
       }
     };
-
     registerGoogleUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [googleAuth.email, allEmails, router, setGoogleAuth]);
 
   // Handle Google sign-in

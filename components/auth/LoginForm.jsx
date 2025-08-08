@@ -115,6 +115,8 @@ const LoginForm = () => {
       } finally {
         setIsLoadingGoogle(false);
       }
+    }else{
+      router.push("/register");
     }
   };
 
