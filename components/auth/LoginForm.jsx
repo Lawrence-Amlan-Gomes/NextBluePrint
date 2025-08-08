@@ -91,34 +91,34 @@ const LoginForm = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    if (session?.user) {
-      setIsLoadingGoogle(true);
-      try {
-        const users = await getAllUsers2();
-        const matchedUser = users.find(
-          (user) => user.email === session.user.email
-        );
+  // const handleGoogleSignIn = async () => {
+  //   if (session?.user) {
+  //     setIsLoadingGoogle(true);
+  //     try {
+  //       const users = await getAllUsers2();
+  //       const matchedUser = users.find(
+  //         (user) => user.email === session.user.email
+  //       );
 
-        if (matchedUser) {
-          setAuth(matchedUser);
-          router.push("/");
-        } else {
-          router.push("/register");
-        }
-      } catch (error) {
-        console.error("Error checking users:", error);
-        setMainError({
-          isError: true,
-          error: "Something went wrong while checking user",
-        });
-      } finally {
-        setIsLoadingGoogle(false);
-      }
-    }else{
-      router.push("/register");
-    }
-  };
+  //       if (matchedUser) {
+  //         setAuth(matchedUser);
+  //         router.push("/");
+  //       } else {
+  //         router.push("/register");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking users:", error);
+  //       setMainError({
+  //         isError: true,
+  //         error: "Something went wrong while checking user",
+  //       });
+  //     } finally {
+  //       setIsLoadingGoogle(false);
+  //     }
+  //   }else{
+  //     router.push("/register");
+  //   }
+  // };
 
   return (
     <div
@@ -203,7 +203,7 @@ const LoginForm = () => {
             "float-left w-full overflow-hidden flex mb-8 items-center justify-center"
           }
         >
-          <button
+          {/* <button
             onClick={handleGoogleSignIn}
             className={`text-[16px] flex items-center gap-4 h-[60px] cursor-pointer w-[270px] rounded-md mt-10 py-2 px-6 bg-blue-800 hover:bg-blue-700 text-white`}
           >
@@ -223,7 +223,7 @@ const LoginForm = () => {
             <div className="h-full float-left text-center flex justify-center items-center">
               <div>{isLoadingGoogle ? `Logging...` : `Log in with Google`}</div>
             </div>
-          </button>
+          </button> */}
         </div>
         <p className="mt-10 text-[16px] xl:text-[20px] 2xl:text-[26px]">
           No Account?{" "}

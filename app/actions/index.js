@@ -26,9 +26,10 @@ async function registerUser(formData) {
 }
 
 async function signInWithGoogle() {
-  const response = await signIn("google", { callbackUrl: "https://bracu-faculty-review.vercel.app/api/auth/callback/google" }, { redirect: false });
+  const response = await signIn("google"); // Prevent automatic redirect
   return response; // Return the response object
 }
+
 async function callCreateFaculty(formData) {
   await dbConnect();
   const created = await createFaculty(formData);

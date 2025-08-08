@@ -118,81 +118,80 @@ const RegistrationForm = () => {
   }, [allEmails, email, firstTimeEmailCheck]);
 
   // Handle Google registration
-  useEffect(() => {
-    const registerGoogleUser = async () => {
-      if (!googleAuth.email || isLoadingGoogle || allEmails.length === 0) {
-        return;
-      }
-      console.log("Checking Google auth:", googleAuth.email, allEmails);
-      if (allEmails.includes(googleAuth.email)) {
-        setEmailError({
-          iserror: true,
-          error: "This Google email is already registered",
-        });
-        const goToLogin = window.confirm(
-          "Your Google Email is already registered. Do you want to go to Login?"
-        );
-        if (goToLogin) {
-          router.push("/login");
-        } else {
-          setGoogleAuth({ name: "", email: "", image: "" });
-        }
-        return;
-      }
-      setIsLoadingGoogle(true);
-      try {
-        const registered = await registerUser({
-          name: googleAuth.name || "Google User",
-          email: googleAuth.email,
-          password: "google-authenticated",
-          phone: "Phone",
-          photo: "",
-          bio: "Bio",
-          paymentType: "Free",
-          comment: [{ initial: "f1", comment: "", stars: 0 }],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isAdmin: false,
-          absenceFaculty: "",
-        });
-        if (registered) {
-          router.push("/login");
-        }
-      } catch (error) {
-        console.error("Google registration failed:", error);
-        if (error.message.includes("E11000")) {
-          setEmailError({
-            iserror: true,
-            error: "This Google email is already registered",
-          });
-          const goToLogin = window.confirm(
-            "Your Google Email is already registered. Do you want to go to Login?"
-          );
-          if (goToLogin) {
-            router.push("/login");
-          } else {
-            setGoogleAuth({ name: "", email: "", image: "" });
-          }
-        } else {
-          setEmailError({
-            iserror: true,
-            error: "Registration failed. Please try again.",
-          });
-        }
-      } finally {
-        setIsLoadingGoogle(false);
-      }
-    };
-    registerGoogleUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [googleAuth.email, allEmails, router, setGoogleAuth]);
+  // useEffect(() => {
+  //   const registerGoogleUser = async () => {
+  //     if (!googleAuth.email || isLoadingGoogle || allEmails.length === 0) {
+  //       return;
+  //     }
+  //     if (allEmails.includes(googleAuth.email)) {
+  //       setEmailError({
+  //         iserror: true,
+  //         error: "This Google email is already registered",
+  //       });
+  //       const goToLogin = window.confirm(
+  //         "Your Google Email is already registered. Do you want to go to Login?"
+  //       );
+  //       if (goToLogin) {
+  //         router.push("/login");
+  //       } else {
+  //         setGoogleAuth({ name: "", email: "", image: "" });
+  //       }
+  //       return;
+  //     }
+  //     setIsLoadingGoogle(true);
+  //     try {
+  //       const registered = await registerUser({
+  //         name: googleAuth.name || "Google User",
+  //         email: googleAuth.email,
+  //         password: "google-authenticated",
+  //         phone: "Phone",
+  //         photo: "",
+  //         bio: "Bio",
+  //         paymentType: "Free",
+  //         comment: [{ initial: "f1", comment: "", stars: 0 }],
+  //         createdAt: new Date(),
+  //         updatedAt: new Date(),
+  //         isAdmin: false,
+  //         absenceFaculty: "",
+  //       });
+  //       if (registered) {
+  //         router.push("/login");
+  //       }
+  //     } catch (error) {
+  //       console.error("Google registration failed:", error);
+  //       if (error.message.includes("E11000")) {
+  //         setEmailError({
+  //           iserror: true,
+  //           error: "This Google email is already registered",
+  //         });
+  //         const goToLogin = window.confirm(
+  //           "Your Google Email is already registered. Do you want to go to Login?"
+  //         );
+  //         if (goToLogin) {
+  //           router.push("/login");
+  //         } else {
+  //           setGoogleAuth({ name: "", email: "", image: "" });
+  //         }
+  //       } else {
+  //         setEmailError({
+  //           iserror: true,
+  //           error: "Registration failed. Please try again.",
+  //         });
+  //       }
+  //     } finally {
+  //       setIsLoadingGoogle(false);
+  //     }
+  //   };
+  //   registerGoogleUser();
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [googleAuth.email, allEmails, router, setGoogleAuth]);
 
   // Handle Google sign-in
-  const handleGoogleSignIn = async () => {
-    if (!googleAuth.email && !isLoadingGoogle) {
-      await signInWithGoogle();
-    }
-  };
+  // const handleGoogleSignIn = async () => {
+  //   if (!googleAuth.email && !isLoadingGoogle) {
+  //     await signInWithGoogle();
+  //   }
+  // };
 
   // Validate password
   useEffect(() => {
@@ -407,7 +406,8 @@ const RegistrationForm = () => {
             "float-left w-full overflow-hidden flex items-center justify-center"
           }
         >
-          <button
+          {/* Google Sign In */}
+          {/* <button
             onClick={handleGoogleSignIn}
             className={`text-[16px] flex items-center gap-4 h-[60px] cursor-pointer w-[270px] rounded-md mt-10 py-2 px-6 bg-blue-800 hover:bg-blue-700 text-white`}
           >
@@ -429,7 +429,7 @@ const RegistrationForm = () => {
                 {isLoadingGoogle ? `Registering...` : `Sign in with Google`}
               </div>
             </div>
-          </button>
+          </button> */}
         </div>
         <div className={"float-left w-full overflow-hidden"}>
           <p className="mt-10 text-[16px] xl:text-[20px] 2xl:text-[26px]">
