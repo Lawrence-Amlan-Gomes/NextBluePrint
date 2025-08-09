@@ -105,11 +105,6 @@ export default function LandingPage() {
     setFilteredFaculties(filtered);
   }, [searchQuery, faculties, setFilteredFaculties]);
 
-  useEffect(() => {
-    if (!auth) {
-      router.push("/login");
-    }
-  }, [clicked, auth, router]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
