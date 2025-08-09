@@ -20,15 +20,23 @@ const ProfileIcon = () => {
           <div
             className={`sm:w-[40px] sm:h-[40px] h-[30px] w-[30px] rounded-full  ${
               theme
-                ? "bg-[#b8b8b8] hover:bg-[#b2b2b2] text-black"
-                : "bg-[#1f1f1f] hover:bg-[#272727] text-zinc-300"
+                ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black"
+                : "bg-[#111111] hover:bg-[#000000] text-white"
             } relative overflow-hidden`}
             onClick={handleClick}
           >
             {auth.photo == "" ? (
               <div className="w-full h-full flex justify-center items-center sm:text-[25px] text-[18px] font-bold">
-                <div className="cursor-pointer">
-                  {auth.name != undefined ? auth.name.charAt(0) : ""}
+                <div className="h-full w-full relative">
+                  {" "}
+                  <Image
+                    priority
+                    src={theme ? profileIconLight : profileIconDark }
+                    alt={theme ? "Proflie Icon Light" : "Proflie Icon Dark"}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
+                    className="object-cover"
+                  />
                 </div>
               </div>
             ) : (
@@ -43,8 +51,8 @@ const ProfileIcon = () => {
             <div
               className={`rounded-full  lg:h-[40px] shadow-md lg:w-[40px] w-[35px] h-[35px] relative ${
                 theme
-                  ? "bg-[#b8b8b8] hover:bg-[#b2b2b2] text-black"
-                  : "bg-[#1f1f1f] hover:bg-[#272727] text-zinc-300"
+                  ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black"
+                  : "bg-[#111111] hover:bg-[#000000] text-white"
               }`}
             >
               <div className="h-full w-full relative">

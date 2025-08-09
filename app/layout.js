@@ -1,14 +1,19 @@
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google"; // Import Roboto instead of Inter
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "./providers/AuthProvider";
 import { SessionProvider } from "next-auth/react";
-
 import { dbConnect } from "@/services/mongo";
 import ThemeProvider from "./providers/ThemeProvider";
 import FacultyProvider from "./providers/FacultyProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+// Initialize Roboto with desired subsets and weights
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"], // Specify weights you need
+  style: ["normal", "italic"], // Optional: include italic if needed
+  display: "swap", // Improves loading performance
+});
 
 export const metadata = {
   title: "Bracu Faculty Review",
@@ -19,7 +24,7 @@ export default async function RootLayout({ children }) {
   await dbConnect();
   return (
     <html lang="en">
-      <body>
+      <body className={roboto.className}> {/* Apply Roboto to the body */}
         <SessionProvider>
           <ThemeProvider>
             <FacultyProvider>
@@ -32,7 +37,7 @@ export default async function RootLayout({ children }) {
                 </div>
               </AuthProvider>
             </FacultyProvider>
-          </ThemeProvider>{" "}
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

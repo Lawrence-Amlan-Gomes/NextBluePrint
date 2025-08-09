@@ -1,3 +1,5 @@
+
+
 const EachField = ({
   label,
   isReal,
@@ -13,9 +15,9 @@ const EachField = ({
     <>
       {isReal ? (
         <div>
-          <div className="sm:text-[18px] xl:text-[20px] font-bold tracking-wider mb-1 text-start mt-5">{value != "" ? label : ""}</div>
+          <div className="text-[12px] lg:text-[16px] mx-[2%] mb-1 text-start mt-5">{value != "" ? label : ""}</div>
           <input
-            className={`p-3 border-[2px] sm:text-[16px] xl:text-[18px] box-border w-full rounded-md focus:outline-none focus:outline-[1px] focus:shadow-none bg-transparent placeholder:text-zinc-400 ${
+            className={`p-3 border-[2px] text-[12px] lg:text-[16px] box-border w-[96%] mx-[2%] rounded-md focus:outline-none focus:outline-[1px] focus:shadow-none bg-transparent placeholder:text-neutral-500 ${
               !iserror
                 ? "border-green-700 text-green-600 focus:outline-green-600"
                 : "border-red-600 text-red-600 focus:outline-red-600"
@@ -28,7 +30,7 @@ const EachField = ({
             autoComplete="off"
           />
           {iserror ? (
-            <div className="text-red-600 mt-1 text-start sm:text-[14px] xl:text-[16px] w-full">
+            <div className="text-red-600 mt-1 text-start text-[10px] lg:text-[14px] w-[96%] mx-[2%]">
               {error}
             </div>
           ) : (

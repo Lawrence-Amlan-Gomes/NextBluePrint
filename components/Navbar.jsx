@@ -17,17 +17,17 @@ const Navbar = () => {
   return (
     <div
       className={`sm:h-[100%] h-[8%] sm:w-[7%] w-full float-left overflow-hidden sm:pt-5 ${
-        theme ? "bg-blue-900" : "bg-blue-900"
+        theme ? "bg-blue-700" : "bg-blue-950"
       }`}
     >
       <div className="sm:w-full h-full w-[25%] sm:h-[10%] float-left flex justify-center items-center">
         <Link href="/">
           <div className="flex justify-center items-center h-full">
             <div
-              className={`rounded-full lg:h-[40px] shadow-md lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
+              className={`rounded-full lg:h-[40px] lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
                 theme
-                  ? "bg-[#b8b8b8] hover:bg-[#b2b2b2] text-black"
-                  : "bg-[#1f1f1f] hover:bg-[#272727] text-zinc-300"
+                  ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black"
+                  : "bg-[#111111] hover:bg-[#000000] text-white"
               }`}
             >
               <div className="h-full w-full relative">
@@ -54,7 +54,7 @@ const Navbar = () => {
         <Link href="/editFaculty">
           <div className="sm:w-full sm:h-[10%] h-full w-[25%] float-left flex justify-center items-center">
             <div
-              className={`rounded-full lg:h-[40px] shadow-md lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
+              className={`rounded-full lg:h-[40px] lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
                 theme
                   ? "bg-[#b8b8b8] hover:bg-[#b2b2b2] text-black"
                   : "bg-[#1f1f1f] hover:bg-[#272727] text-zinc-300"

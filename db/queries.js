@@ -1,6 +1,5 @@
-
-import { userModel } from "@/models/user-model";
 import { facultyModel } from "@/models/faculty-model";
+import { userModel } from "@/models/user-model";
 
 import {
   replaceMongoIdInArray,
@@ -37,68 +36,55 @@ async function findUserByCredentials(credentials) {
   return null;
 }
 
-async function updateUser(email, name, phone, bio) {
+async function updateUser(email, name, department, serial) {
   await userModel.updateOne(
-      { email: email },
-      { $set: { name: name, phone: phone, bio: bio } }
-    )
+    { email: email },
+    { $set: { name: name, department: department, serial: serial } }
+  );
 }
 
 async function updateUserComment(email, comment) {
-  await userModel.updateOne(
-      { email: email },
-      { $set: { comment: comment } }
-    )
+  await userModel.updateOne({ email: email }, { $set: { comment: comment } });
 }
-
 
 async function updateFaculty(initial, name, department, courses) {
   await facultyModel.updateOne(
-      { initial: initial },
-      { $set: { name: name, department: department, courses: courses } }
-    )
+    { initial: initial },
+    { $set: { name: name, department: department, courses: courses } }
+  );
 }
 
 async function changePassword(email, password) {
-  await userModel.updateOne(
-      { email: email },
-      { $set: { password:password } }
-    )
+  await userModel.updateOne({ email: email }, { $set: { password: password } });
 }
 
 async function upDateDays(email, days) {
-  await userModel.updateOne(
-      { email: email },
-      { $set: { days:days } }
-    )
+  await userModel.updateOne({ email: email }, { $set: { days: days } });
 }
 
 async function changePhoto(email, photo) {
-  await userModel.updateOne(
-      { email: email },
-      { $set: { photo: photo } }
-    )
+  await userModel.updateOne({ email: email }, { $set: { photo: photo } });
 }
 
 async function changePhotoFaculty(initial, photo) {
   await facultyModel.updateOne(
-      { initial: initial },
-      { $set: { photo: photo } }
-    )
+    { initial: initial },
+    { $set: { photo: photo } }
+  );
 }
 
 export {
-  createUser,
-  findUserByCredentials,
-  getAllUsers,
-  updateUser,
   changePassword,
   changePhoto,
-  upDateDays,
-  createFaculty,
-  getAllFaculties,
-  updateFaculty,
-  deleteFaculty,
   changePhotoFaculty,
+  createFaculty,
+  createUser,
+  deleteFaculty,
+  findUserByCredentials,
+  getAllFaculties,
+  getAllUsers,
+  upDateDays,
+  updateFaculty,
+  updateUser,
   updateUserComment,
 };

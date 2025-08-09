@@ -4,6 +4,10 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useTheme } from "@/app/hooks/useTheme";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import profileIconDark from "../public/profileIconDark.png";
+import profileIconLight from "../public/profileIconLight.png";
+import colors from "@/app/color/color";
 
 export default function ProfilePic() {
   const { theme } = useTheme();
@@ -93,12 +97,24 @@ export default function ProfilePic() {
             </div>
           ) : image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={image} alt="profilepic" className="w-full h-full object-cover" />
-          ) : auth?.name ? (
-            <div className="w-full h-full flex justify-center items-center text-[50px] sm:text-[100px] font-bold text-black">
-              {auth.name.charAt(0)}
+            <img
+              src={image}
+              alt="profilepic"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className={`${theme ? "bg-black" : "bg-white"} h-full w-full relative`}>
+              {" "}
+              <Image
+                priority
+                src={theme ? profileIconDark : profileIconLight}
+                alt={theme ? "Proflie Icon Light" : "Proflie Icon Dark"}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
+                className="object-cover"
+              />
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 

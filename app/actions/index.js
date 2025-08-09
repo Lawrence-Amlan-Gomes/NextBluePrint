@@ -1,23 +1,23 @@
 "use server";
-import { signIn, auth } from "../auth";
-import { revalidatePath } from "next/cache";
-import { dbConnect } from "@/services/mongo";
 import {
-  createUser,
-  findUserByCredentials,
-  getAllUsers,
-  updateUser,
   changePassword,
   changePhoto,
-  upDateDays,
-  createFaculty,
-  getAllFaculties,
-  updateFaculty,
-  deleteFaculty,
   changePhotoFaculty,
+  createFaculty,
+  createUser,
+  deleteFaculty,
+  findUserByCredentials,
+  getAllFaculties,
+  getAllUsers,
+  upDateDays,
+  updateFaculty,
+  updateUser,
   updateUserComment,
 } from "@/db/queries";
+import { dbConnect } from "@/services/mongo";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { signIn } from "../auth";
 
 async function registerUser(formData) {
   await dbConnect();
@@ -65,10 +65,10 @@ async function performLogin(formData) {
   }
 }
 
-async function callUpdateUser(email, name, phone, bio) {
+async function callUpdateUser(email, name, department, serial) {
   await dbConnect();
   try {
-    await updateUser(email, name, phone, bio);
+    await updateUser(email, name, department, serial);
     revalidatePath("/");
   } catch (error) {
     throw error;
@@ -148,18 +148,18 @@ async function callChangePhotoFaculty(initial, photo) {
 }
 
 export {
-  registerUser,
-  performLogin,
-  getAllUsers2,
-  callUpdateUser,
   callChangePassword,
   callChangePhoto,
-  callUpdateDays,
-  callCreateFaculty,
-  getAllFaculties2,
-  callUpdateFaculty,
-  callDeleteFaculty,
   callChangePhotoFaculty,
+  callCreateFaculty,
+  callDeleteFaculty,
+  callUpdateDays,
+  callUpdateFaculty,
+  callUpdateUser,
   callUpdateUserComment,
+  getAllFaculties2,
+  getAllUsers2,
+  performLogin,
+  registerUser,
   signInWithGoogle,
 };

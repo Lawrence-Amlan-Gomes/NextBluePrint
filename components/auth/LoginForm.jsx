@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import EachField from "./EachField";
@@ -8,14 +9,15 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/hooks/useTheme";
 import Image from "next/image";
 import googleIcon from "../../public/googleIcon.png";
-import { useSession } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import colors from "@/app/color/color";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const { theme } = useTheme();
-  const { setAuth, googleAuth } = useAuth();
+  const { setAuth } = useAuth();
   const router = useRouter();
   const [isTyping, setIsTyping] = useState(true);
   const [email, setEmail] = useState("");
@@ -23,6 +25,10 @@ const LoginForm = () => {
   const [mainError, setMainError] = useState({
     isError: false,
     error: "Email or password is incorrect",
+  });
+  const [googleError, setGoogleError] = useState({
+    isError: false,
+    error: "",
   });
   const [emailError, setEmailError] = useState({
     iserror: false,
@@ -53,8 +59,24 @@ const LoginForm = () => {
       isError: false,
       error: "Email or password is incorrect",
     });
+    setGoogleError({
+      isError: false,
+      error: "",
+    });
     setIsTyping(true);
   }, [email, password]);
+
+  useEffect(() => {
+    if (googleError.isError) {
+      const timer = setTimeout(() => {
+        setGoogleError({
+          isError: false,
+          error: "",
+        });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [googleError.isError]);
 
   const submitForm = async () => {
     setIsLoading(true);
@@ -91,34 +113,37 @@ const LoginForm = () => {
     }
   };
 
-  // const handleGoogleSignIn = async () => {
-  //   if (session?.user) {
-  //     setIsLoadingGoogle(true);
-  //     try {
-  //       const users = await getAllUsers2();
-  //       const matchedUser = users.find(
-  //         (user) => user.email === session.user.email
-  //       );
+  const handleGoogleSignIn = async () => {
+    setIsLoadingGoogle(true);
+    try {
+      if (!session?.user) {
+        await signIn("google");
+      } else {
+        const users = await getAllUsers2();
+        const matchedUser = users.find(
+          (user) => user.email === session.user.email
+        );
 
-  //       if (matchedUser) {
-  //         setAuth(matchedUser);
-  //         router.push("/");
-  //       } else {
-  //         router.push("/register");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error checking users:", error);
-  //       setMainError({
-  //         isError: true,
-  //         error: "Something went wrong while checking user",
-  //       });
-  //     } finally {
-  //       setIsLoadingGoogle(false);
-  //     }
-  //   }else{
-  //     router.push("/register");
-  //   }
-  // };
+        if (matchedUser) {
+          setAuth(matchedUser);
+          router.push("/");
+        } else {
+          setGoogleError({
+            isError: true,
+            error: `Your email ${session.user.email} hasn't registered yet`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error checking users:", error);
+      setGoogleError({
+        isError: true,
+        error: "Something went wrong while checking user",
+      });
+    } finally {
+      setIsLoadingGoogle(false);
+    }
+  };
 
   return (
     <div
@@ -128,15 +153,17 @@ const LoginForm = () => {
         }
       }}
       className={`h-full w-full sm:p-0 p-[5%] overflow-y-auto lg:overflow-hidden lg:flex lg:justify-center lg:items-center ${
-        theme ? "bg-[#ffffff] text-[#0a0a0a]" : "bg-[#000000] text-[#ebebeb]"
+        theme
+          ? `${colors.bgLight} ${colors.bgLight}`
+          : `${colors.bgDark} ${colors.bgDark}`
       }`}
     >
       <div
-        className={` p-10 rounded-lg sm:my-[5%] sm:w-[50%] sm:mx-[25%] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] lg:my-0  text-center shadow-lg ${
-          theme ? "bg-[#ececec] text-[#0a0a0a]" : "bg-[#0f0f0f] text-[#f0f0f0]"
+        className={`sm:p-10 p-5 rounded-md sm:my-[5%] sm:w-[50%] sm:mx-[25%] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] lg:my-0 text-center ${
+          theme ? `${colors.cardLight}` : `${colors.cardDark}`
         }`}
       >
-        <div className="text-[20px] sm:text-[25px] md:text-[30px] lg:text-[35px] xl:text-[40px] 2xl:text-[45px] font-bold mb-10 ">
+        <div className="text-[20px] lg:text-[25px] 2xl:text-[40px] font-bold sm:mb-10">
           Login
         </div>
         {/* Trick the browser with this fake email and password field */}
@@ -187,50 +214,54 @@ const LoginForm = () => {
           error={passwordError.error}
         />
         {mainError.isError ? (
-          <div className="mt-3 text-red-600">{mainError.error}</div>
+          <div className="mt-3 text-red-600 text-[10px] lg:text-[14px] 2xl:text-[22px]">
+            {mainError.error}
+          </div>
         ) : (
           <></>
         )}
 
         <button
           onClick={submitForm}
-          className={`text-[18px] text-white cursor-pointer rounded-lg mt-10 py-2 px-6  ${"bg-green-800 hover:bg-green-700"}`}
+          className={`text-[12px] lg:text-[16px] 2xl:text-[25px] text-white cursor-pointer rounded-lg mt-6 sm:mt-12 py-2 sm:px-6 px-4 bg-green-800 hover:bg-green-700`}
         >
           {isLoading ? `Logging...` : `Login`}
         </button>
-        <div
-          className={
-            "float-left w-full overflow-hidden flex mb-8 items-center justify-center"
-          }
-        >
-          {/* <button
+        <div className="w-full flex flex-col items-center justify-center">
+          <button
             onClick={handleGoogleSignIn}
-            className={`text-[16px] flex items-center gap-4 h-[60px] cursor-pointer w-[270px] rounded-md mt-10 py-2 px-6 bg-blue-800 hover:bg-blue-700 text-white`}
+            className={`text-[12px] lg:text-[16px] 2xl:text-[25px] flex items-center gap-4 lg:h-[60px] h-[40px] cursor-pointer rounded-md mt-10 py-2 px-4 lg:px-6 ${
+              theme ? "bg-blue-700 hover:bg-blue-800" : "bg-blue-900 hover:bg-blue-950"
+            } text-white`}
           >
-            <div className="h-full float-left flex justify-center items-center">
-              <div className="h-[50px] w-[50px] relative">
-                {" "}
+            <div className="h-full flex justify-center items-center">
+              <div className="h-[30px] sm:h-[50px] w-[30px] sm:w-[50px] relative">
                 <Image
                   priority
                   src={googleIcon}
-                  alt={"Google Icon"}
+                  alt="Google Icon"
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
                   className="object-cover"
                 />
               </div>
             </div>
-            <div className="h-full float-left text-center flex justify-center items-center">
+            <div className="h-full text-center flex justify-center items-center">
               <div>{isLoadingGoogle ? `Logging...` : `Log in with Google`}</div>
             </div>
-          </button> */}
+          </button>
+          {googleError.isError && (
+            <div className="mt-2 text-red-600 text-[10px] lg:text-[14px] 2xl:text-[22px]">
+              {googleError.error}
+            </div>
+          )}
         </div>
-        <p className="mt-10 text-[16px] xl:text-[20px] 2xl:text-[26px]">
+        <div className="sm:mt-18 mt-5 text-[12px] lg:text-[16px] 2xl:text-[26px]">
           No Account?{" "}
           <Link href="/register" className="text-blue-600 hover:text-blue-500">
             Register
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

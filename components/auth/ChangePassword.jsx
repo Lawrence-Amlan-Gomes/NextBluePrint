@@ -5,6 +5,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { callChangePassword } from "@/app/actions";
 import { useTheme } from "@/app/hooks/useTheme";
 import { useRouter } from "next/navigation";
+import colors from "@/app/color/color";
 
 const ChangePassword = () => {
   const router = useRouter();
@@ -107,12 +108,14 @@ const ChangePassword = () => {
   return auth ? (
     <div
       className={`h-full w-full sm:p-0 p-[5%] overflow-y-auto lg:overflow-hidden lg:flex lg:justify-center lg:items-center ${
-        theme ? "bg-[#ffffff] text-[#0a0a0a]" : "bg-[#000000] text-[#ebebeb]"
+        theme
+          ? `${colors.bgLight} ${colors.bgLight}`
+          : `${colors.bgDark} ${colors.bgDark}`
       }`}
     >
       <div
-        className={`p-10 overflow-hidden rounded-lg sm:my-[5%] sm:w-[80%] sm:mx-[10%] lg:w-[700px] xl:w-[800px] 2xl:w-[900px] lg:my-0 text-center shadow-lg ${
-          theme ? "bg-[#ececec] text-[#0a0a0a]" : "bg-[#0f0f0f] text-[#f0f0f0]"
+        className={`p-10 overflow-hidden rounded-lg sm:my-[5%] sm:w-[80%] sm:mx-[10%] lg:w-[700px] xl:w-[800px] 2xl:w-[900px] lg:my-0 text-center ${
+          theme ? `${colors.cardLight}` : `${colors.cardDark}`
         }`}
       >
         <div className={"w-full overflow-hidden"}>
@@ -221,7 +224,7 @@ const ChangePassword = () => {
           />
           <button
             onClick={submitForm}
-            className={`text-[18px] cursor-pointer rounded-lg mt-10 py-2 px-6 mb-5 shadow-md ${
+            className={`text-[12px] lg:text-[16px] 2xl:text-[25px] cursor-pointer rounded-lg mt-10 py-2 px-6 mb-5 ${
               noError
                 ? "bg-green-700 text-white"
                 : theme
