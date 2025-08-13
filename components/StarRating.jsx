@@ -4,15 +4,15 @@ export default function StarRating ({ rating }) {
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-1">
       {[...Array(fullStars)].map((_, i) => (
-        <span key={`full-${i}`} className="text-yellow-400 text-[12px] sm:text-xl">
+        <span key={`full-${i}`} className="text-yellow-400 text-[12px] sm:text-[12px] lg:text-[16px] xl:text-[18px] 2xl:text-[30px] sm:text-xl">
           ★
         </span>
       ))}
-      {hasHalfStar && <span className="text-yellow-400 text-[12px] sm:text-xl">☆</span>}
+      {hasHalfStar && <span className="text-yellow-400 text-[12px] sm:text-[12px] lg:text-[16px] xl:text-[18px] 2xl:text-[30px] sm:text-xl">☆</span>}
       {[...Array(emptyStars)].map((_, i) => (
-        <span key={`empty-${i}`} className="text-zinc-300 text-[12px] sm:text-xl">
+        <span key={`empty-${i}`} className="text-zinc-300 text-[12px] sm:text-[12px] lg:text-[16px] xl:text-[18px] 2xl:text-[30px] sm:text-xl">
           ☆
         </span>
       ))}

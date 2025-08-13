@@ -6,6 +6,7 @@ import InteractiveStarRating from "./InteractiveStarRating";
 import StarRating from "./StarRating";
 import YourComment from "./YourComment";
 import { useRouter } from "next/navigation";
+import colors from "@/app/color/color";
 
 export default function FacultyDetails({ setClicked }) {
   const { theme } = useTheme();
@@ -128,104 +129,101 @@ export default function FacultyDetails({ setClicked }) {
     console.log("Rating label set to: Your Rating");
   };
 
-  console.log(
-    "FacultyDetails rendering, initialRating:",
-    initialRating,
-    "ratingLabel:",
-    ratingLabel,
-    "facultyRating:",
-    facultyRating
-  );
-
   return (
     <>
       <div
-        className={`w-full h-full hidden sm:flex ${
-          theme
-            ? "bg-[#ffffff] text-[#0a0a0a]"
-            : "bg-[#000000] text-[#ebebeb] relative"
+        className={`hidden sm:flex w-full h-full ${
+          theme ? colors.bgLight : colors.bgDark
         }`}
       >
-        <div className="w-[70%] h-full flex flex-col">
-          <div className="h-[15%] w-full">
-            <div className="h-full w-full flex">
-              <div className="w-[15%] h-full float-left flex items-center justify-center">
-                <button
-                  onClick={() => setClicked(false)}
-                  className={`px-4 py-2 rounded-md font-semibold ${
-                    theme
-                      ? "bg-red-500 text-white hover:bg-red-600"
-                      : "bg-red-700 text-white hover:bg-red-800"
-                  }`}
-                >
-                  Go Back
-                </button>
-              </div>
-              <div className="w-[85%] h-full float-left flex items-center justify-center">
-                {auth && (
-                  <YourComment
-                    setAuth={setAuth}
-                    yourComment={yourComment}
-                    setYourComment={setYourComment}
-                    auth={auth}
-                    faculty={faculty}
-                    theme={theme}
-                  />
-                )}
-              </div>
+        {/* LEFT SIDE - Comments Section */}
+        <div className="w-[70%] flex flex-col p-4 lg:p-6 pr-0 lg:pr-0">
+          {/* Top: Go Back + Your Comment */}
+          <div className="flex items-center mb-4">
+            <button
+              onClick={() => setClicked(false)}
+              className={`px-4 py-2 rounded-md font-semibold text-sm md:text-base shadow-sm ${
+                theme
+                  ? "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-red-700 text-white hover:bg-red-800"
+              }`}
+            >
+              Go Back
+            </button>
+            <div className="flex-1 ml-4">
+              {auth && (
+                <YourComment
+                  setAuth={setAuth}
+                  yourComment={yourComment}
+                  setYourComment={setYourComment}
+                  auth={auth}
+                  faculty={faculty}
+                  theme={theme}
+                />
+              )}
             </div>
           </div>
+
+          {/* Others Comments */}
           <div
-            className={`h-[85%] w-full float-left overflow-hidden ${
-              theme ? "bg-[#f5f5f5]" : "bg-[#1a1a1a]"
+            className={`flex-1 rounded-lg overflow-hidden ${
+              theme ? colors.cardLight : colors.cardDark
             }`}
           >
-            <p className="font-semibold h-[10%] flex justify-center items-center w-full float-left">
-              Others Comments:
-            </p>
-            <div className="h-[90%] w-full float-left overflow-y-auto px-4">
+            <h2 className="font-bold text-base md:text-lg 2xl:text-[25px] mt-2 p-3 2xl:mt-3 dark:border-gray-700 text-center">
+              Others Comments
+            </h2>
+            <div className="h-full max-h-full overflow-y-auto px-4 py-3 space-y-3">
               {othersComment.length > 0 ? (
                 othersComment.map(
                   (comment, index) =>
                     comment.comment && (
                       <div
                         key={index}
-                        className={`mb-4 p-3 rounded-md ${
-                          theme ? "bg-white" : "bg-[#2a2a2a]"
+                        className={`p-3 2xl:p-4 rounded-md border-[1px] ${
+                          theme ? "bg-[#eeeeee] border-[#dddddd]" : "bg-[#111111] border-[#222222]"
                         }`}
                       >
-                        <p className="font-semibold">{comment.name}:</p>
-                        <p>{comment.comment}</p>
+                        <p className="font-semibold text-sm md:text-[14px] sm:text-[12px] xl:text-[16px] 2xl:text-[20px] mb-1 2xl:mb-2">
+                          {comment.name}:
+                        </p>
+                        <p className="text-xs leading-snug md:text-[14px] sm:text-[12px] xl:text-[16px] 2xl:text-[20px]">
+                          {comment.comment}
+                        </p>
                       </div>
                     )
                 )
               ) : (
-                <p>No comments from others yet.</p>
+                <p className="text-sm italic text-gray-500 text-center md:text-[12px] ">
+                  No comments from others yet.
+                </p>
               )}
             </div>
           </div>
         </div>
-        <div
-          className={`h-full w-[2px] ${
-            theme ? "bg-[#cccccc]" : "bg-[#444444]"
-          }`}
-        ></div>
-        <div className="w-[30%] h-full flex justify-center items-center p-6 relative overflow-y-auto">
-          <div className="flex flex-col items-center">
-            <div className="w-40 h-48 mb-4 rounded-lg overflow-hidden">
+
+        {/* RIGHT SIDE - Faculty Details */}
+        <div className="w-[30%] overflow-auto h-full flex justify-center items-center p-4 lg:p-6 relative">
+          <div
+            className={`w-full rounded-xl p-4 lg:p-6 2xl:p-10 flex flex-col items-center ${
+              theme ? `${colors.cardLight}` : `${colors.cardDark}`
+            }`} 
+          >
+            {/* Faculty Image */}
+            <div className="w-28 h-32 md:w-36 md:h-44 lg:w-[200px] lg:h-[225px] xl:w-[270px] xl:h-[290px] 2xl:w-[300px] 2xl:h-[380px] rounded-lg overflow-hidden shadow-md mb-4">
               {faculty?.photo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={faculty.photo}
                   alt={`${faculty?.name || "Faculty"} photo`}
-                  className="w-full h-full object-cover rounded-sm"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <svg
                   className={`w-full h-full ${
                     theme
-                      ? "bg-[#d5d5d5] text-[#0a0a0a] "
-                      : "bg-[#333333] text-[#f0f0f0] "
+                      ? "bg-gray-300 text-gray-600"
+                      : "bg-gray-700 text-gray-200"
                   }`}
                   fill="currentColor"
                   viewBox="0 0 24 24"
@@ -234,46 +232,64 @@ export default function FacultyDetails({ setClicked }) {
                 </svg>
               )}
             </div>
-            <h2 className="text-2xl font-bold mb-2 text-center">
+
+            {/* Faculty Info */}
+            <p className="text-lg sm:text-[14px] leading-[25px] 2xl:leading-[40px] 2xl:mt-3 lg:mb-2 lg:text-[20px] xl:text-2xl 2xl:text-[35px] font-bold text-center">
               {faculty?.name || "N/A"}
-            </h2>
-            <p className="text-lg mb-2 text-center">
+            </p>
+            <p className="text-sm sm:text-[12px]  xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-80">
               {faculty?.initial || "N/A"}
             </p>
-            <p className="text-lg mb-2 text-center">
+            <p className="text-sm sm:text-[12px]  xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-80">
               {faculty?.department || "N/A"}
             </p>
-            <p className="text-lg mb-2 text-center">
+            <p className="text-xs sm:text-[12px] xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-70">
               {faculty?.courses?.join(", ") || "No courses listed"}
             </p>
-            <div className="flex justify-center items-center mt-2">
+
+            {/* Average Rating */}
+            <div className="flex justify-center items-center 2xl:mt-4">
               {facultyRating != null && <StarRating rating={facultyRating} />}
             </div>
+
+            {/* Your Rating */}
             {auth && (
-              <div className="mt-10 flex flex-col items-center">
-                <p className="font-semibold mb-2 text-center">{ratingLabel}</p>
+              <div className="lg:mt-6 sm:mt-2 flex flex-col items-center">
+                <p className="font-semibold lg:mb-2 text-xs md:text-sm lg:text-[18px] 2xl:mt-5 2xl:text-[28px] text-center">
+                  {ratingLabel}
+                </p>
                 <InteractiveStarRating
                   initialRating={initialRating}
-                  onRatingChange={handleRatingChange}
+                  onRatingChange={(newRating) => {
+                    setShowRatingSuccess(true);
+                    console.log(
+                      "FacultyDetails received new rating:",
+                      newRating
+                    );
+                  }}
                   disabled={isUpdatingRating}
                   theme={theme}
                   auth={auth}
                   faculty={faculty}
                   setAuth={setAuth}
-                  onHoverStart={handleHoverStart}
-                  onHoverEnd={handleHoverEnd}
+                  onHoverStart={() => setRatingLabel("Change Rating")}
+                  onHoverEnd={() => setRatingLabel("Your Rating")}
                 />
               </div>
             )}
+
+            {/* Success Popup */}
             {showRatingSuccess && (
               <div
-                className={`absolute top-0 left-0 w-full h-full flex items-center justify-center z-10 ${
+                className={`absolute top-0 left-0 w-full h-full flex items-center justify-center z-10 rounded-xl shadow-lg ${
                   theme
                     ? "bg-green-100 text-green-800"
                     : "bg-green-900 text-green-200"
-                } rounded-md opacity-90`}
+                } opacity-90`}
               >
-                <p className="font-semibold">Rating Updated Successfully!</p>
+                <p className="font-semibold text-center">
+                  Rating Updated Successfully!
+                </p>
               </div>
             )}
           </div>
@@ -389,7 +405,9 @@ export default function FacultyDetails({ setClicked }) {
                   {faculty?.initial || "N/A"}
                 </p>
                 <div className="flex justify-center items-center">
-                  {facultyRating != null && <StarRating rating={facultyRating} />}
+                  {facultyRating != null && (
+                    <StarRating rating={facultyRating} />
+                  )}
                 </div>
               </div>
             </div>

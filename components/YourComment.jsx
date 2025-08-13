@@ -1,5 +1,6 @@
-import { useState, useEffect, use } from "react";
 import { callUpdateUserComment } from "@/app/actions";
+import { useEffect, useState } from "react";
+import colors from "@/app/color/color";
 
 export default function YourComment({
   setAuth,
@@ -13,13 +14,14 @@ export default function YourComment({
   const [isUpdating, setIsUpdating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+
   useEffect(() => {
     // Initialize newCommentInput with yourComment when it changes
     setNewCommentInput(yourComment);
-  }, [yourComment]);    
+  }, [yourComment]);
 
   const handleUpdateComment = async () => {
-    if (!auth?.email || !faculty?.initial || !newCommentInput.trim()) return;
+    if (!auth?.email || !faculty?.initial) return;
 
     setIsUpdating(true);
     try {
@@ -75,11 +77,11 @@ export default function YourComment({
 
   return (
     <div
-      className={`p-2 sm:rounded-md w-full sm:h-[60px] h-full flex flex-row items-center sm:gap-4 gap-2 relative ${
-        theme ? "bg-[#f5f5f5]" : "bg-[#1a1a1a]"
+      className={`p-2 sm:rounded-md w-full sm:h-[50px] lg:h-[65px] lg:px-3 2xl:h-[80px] 2xl:px-4 h-full flex flex-row items-center sm:gap-4 gap-2 relative ${
+        theme ? colors.cardLight : colors.cardDark
       }`}
     >
-      <div className="w-[20%] sm:block hidden">
+      <div className="w-[20%] sm:block sm:text-[10px] hidden lg:text-[14px] xl:text-[16px] 2xl:text-[20px]">
         <p className="sm:font-semibold">Your Comment:</p>
       </div>
       {auth && (
@@ -89,7 +91,7 @@ export default function YourComment({
             value={newCommentInput}
             onChange={(e) => setNewCommentInput(e.target.value)}
             placeholder="Enter your comment"
-            className={`sm:p-2 p-1 rounded-sm sm:rounded-md sm:border-2 border-[1px] text-[12px] sm:text-[16px] sm:w-[60%] w-[70%] ${
+            className={`sm:p-2 p-1 rounded-sm sm:text-[10px] lg:text-[14px] 2xl:text-[22px] sm:rounded-md sm:border-2 border-[1px] text-[12px] xl:text-[16px] sm:w-[60%] w-[70%] ${
               theme
                 ? "bg-white text-[#0a0a0a] border-[#cccccc]"
                 : "bg-[#2a2a2a] text-[#ebebeb] border-[#444444]"
@@ -97,14 +99,14 @@ export default function YourComment({
           />
           <button
             onClick={handleUpdateComment}
-            disabled={isUpdating || !newCommentInput.trim()}
-            className={`sm:p-2 p-1 rounded-sm sm:rounded-md font-semibold text-[12px] sm:text-[16px] sm:w-[20%] w-[30%] ${
-              isUpdating || !newCommentInput.trim()
+            disabled={isUpdating}
+            className={`sm:p-2 p-1 rounded-sm sm:rounded-md font-semibold text-[12px] lg:text-[14px] sm:text-[10px] xl:text-[16px] 2xl:text-[22px] sm:w-[20%] w-[30%] ${
+              isUpdating
                 ? theme
                   ? "bg-[#dbdbdb] text-[#808080]"
-                  : "bg-[#1a1a1a] text-[#696969]"
+                  : "bg-[#282828] text-[#696969]"
                 : theme
-                ? "bg-blue-500 text-white hover:bg-blue-600"
+                ? "bg-blue-700 text-white hover:bg-blue-800"
                 : "bg-blue-700 text-white hover:bg-blue-800"
             }`}
           >
@@ -120,7 +122,9 @@ export default function YourComment({
               : "bg-green-900 text-green-200"
           } rounded-md opacity-90`}
         >
-          <p className="font-semibold sm:text-[18px] text-[12px]">Comment Updated Successfully!</p>
+          <p className="font-semibold sm:text-[18px] text-[12px]">
+            Comment Updated Successfully!
+          </p>
         </div>
       )}
     </div>

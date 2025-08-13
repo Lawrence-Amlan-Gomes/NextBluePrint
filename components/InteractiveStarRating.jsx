@@ -74,11 +74,11 @@ export default function InteractiveStarRating({
   };
 
   return (
-    <div className="flex justify-center items-center gap-1">
+    <div className="flex justify-center text-[12px] lg:text-[16px] xl:text-[20xp] 2xl:text-[30px] 2xl:mt-3 items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
-          className={`sm:w-8 sm:h-8 w-5 h-5 cursor-pointer ${
+          className={`sm:w-[20px] lg:w-[25px] 2xl:w-[35px] sm:h-8 w-5 h-5 cursor-pointer ${
             star <= (hoveredRating || selectedRating)
               ? theme
                 ? "text-blue-600"

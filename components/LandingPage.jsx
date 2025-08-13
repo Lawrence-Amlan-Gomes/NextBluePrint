@@ -100,7 +100,8 @@ export default function LandingPage() {
     const filtered = faculties.filter(
       (faculty) =>
         faculty.initial.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faculty.name.toLowerCase().includes(searchQuery.toLowerCase())
+        faculty.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        faculty.department.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredFaculties(filtered);
   }, [searchQuery, faculties, setFilteredFaculties]);
@@ -131,7 +132,7 @@ export default function LandingPage() {
               : "bg-[#000000] text-[#ebebeb]"
           }`}
         >
-          <h1 className="font-bold text-[12px] md:text-[25px]">
+          <h1 className="font-bold text-[12px] md:text-[25px] 2xl:text-[40px] sm:mr-10">
             Bracu Faculty Review
           </h1>
           <input
