@@ -102,10 +102,10 @@ export default function FacultyDetails({ setClicked }) {
 
       // Compute initialRating
       const yourRatingData = facultyRatings.find(
-        (rating) => Object.keys(rating)[0] === auth.name
+        (rating) => rating.email === auth.email
       );
       setInitialRating(
-        yourRatingData ? Number(Object.values(yourRatingData)[0]) : 0
+        yourRatingData ? Number(yourRatingData.rating) : 0
       );
 
       // Compute othersComment (exclude auth.email)
@@ -119,7 +119,7 @@ export default function FacultyDetails({ setClicked }) {
 
       // Compute facultyRating (average of all ratings)
       const ratings = facultyRatings.map((rating) =>
-        Number(Object.values(rating)[0])
+        Number(rating.rating)
       );
       const averageRating =
         ratings.length > 0
@@ -162,7 +162,7 @@ export default function FacultyDetails({ setClicked }) {
     console.log("Rating label set to: Your Rating");
   };
 
-  console.log(othersComment)
+  console.log(othersComment);
 
   return (
     <>

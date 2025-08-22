@@ -37,10 +37,11 @@ export default function InteractiveStarRating({
   }, [initialRating]);
 
   const handleClick = async (rating) => {
-    if (disabled || isUpdating || !auth?.name || !faculty?.initial) {
+    if (disabled || isUpdating || !auth?.email || !auth?.name || !faculty?.initial) {
       console.log("Rating update blocked:", {
         disabled,
         isUpdating,
+        authEmail: auth?.email,
         authName: auth?.name,
         facultyInitial: faculty?.initial,
       });
@@ -54,14 +55,14 @@ export default function InteractiveStarRating({
       )?.comments || [];
 
       console.log("Current faculty ratings:", facultyRatings);
-      console.log("Updating rating for user:", auth.name, "to", rating);
+      console.log("Updating rating for user:", auth.email, "to", rating);
 
       const updatedRatings = rating > 0
         ? [
-            ...facultyRatings.filter((r) => Object.keys(r)[0] !== auth.name),
-            { [auth.name]: rating },
+            ...facultyRatings.filter((r) => r.email !== auth.email),
+            { email: auth.email, name: auth.name, rating: rating },
           ]
-        : facultyRatings.filter((r) => Object.keys(r)[0] !== auth.name);
+        : facultyRatings.filter((r) => r.email !== auth.email);
 
       console.log("Updated ratings to be sent:", {
         initial: faculty.initial,
