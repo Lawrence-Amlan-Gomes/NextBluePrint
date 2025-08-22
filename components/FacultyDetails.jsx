@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import colors from "@/app/color/color";
 import { callGetFacultyComments, callGetFacultyRatings } from "@/app/actions";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function FacultyDetails({ setClicked }) {
   const { theme } = useTheme();
@@ -42,7 +43,9 @@ export default function FacultyDetails({ setClicked }) {
     const fetchFacultyCommentsAndRatings = async () => {
       try {
         // Check if comments for faculty.initial exist in allFacultyComment
-        if (!allFacultyComment.find((item) => item.initial === faculty.initial)) {
+        if (
+          !allFacultyComment.find((item) => item.initial === faculty.initial)
+        ) {
           const comments = await callGetFacultyComments(faculty.initial);
           setAllFacultyComment((prev) => [
             ...prev.filter((item) => item.initial !== faculty.initial),
@@ -51,7 +54,9 @@ export default function FacultyDetails({ setClicked }) {
         }
 
         // Check if ratings for faculty.initial exist in allFacultyRating
-        if (!allFacultyRating.find((item) => item.initial === faculty.initial)) {
+        if (
+          !allFacultyRating.find((item) => item.initial === faculty.initial)
+        ) {
           const ratings = await callGetFacultyRatings(faculty.initial);
           setAllFacultyRating((prev) => [
             ...prev.filter((item) => item.initial !== faculty.initial),
@@ -64,21 +69,30 @@ export default function FacultyDetails({ setClicked }) {
     };
 
     if (faculty?.initial) {
-      console.log("Fetching faculty comments and ratings for:", faculty.initial);
+      console.log(
+        "Fetching faculty comments and ratings for:",
+        faculty.initial
+      );
       fetchFacultyCommentsAndRatings();
     }
-  }, [faculty.initial, allFacultyComment, allFacultyRating, setAllFacultyComment, setAllFacultyRating]);
+  }, [
+    faculty.initial,
+    allFacultyComment,
+    allFacultyRating,
+    setAllFacultyComment,
+    setAllFacultyRating,
+  ]);
 
   // Compute yourComment, initialRating, othersComment, and facultyRating
   useEffect(() => {
     if (auth && faculty?.initial) {
       // Find faculty comments and ratings
-      const facultyComments = allFacultyComment.find(
-        (item) => item.initial === faculty.initial
-      )?.comments || [];
-      const facultyRatings = allFacultyRating.find(
-        (item) => item.initial === faculty.initial
-      )?.comments || [];
+      const facultyComments =
+        allFacultyComment.find((item) => item.initial === faculty.initial)
+          ?.comments || [];
+      const facultyRatings =
+        allFacultyRating.find((item) => item.initial === faculty.initial)
+          ?.comments || [];
 
       // Compute yourComment
       const yourCommentData = facultyComments.find(
@@ -90,7 +104,9 @@ export default function FacultyDetails({ setClicked }) {
       const yourRatingData = facultyRatings.find(
         (rating) => Object.keys(rating)[0] === auth.name
       );
-      setInitialRating(yourRatingData ? Number(Object.values(yourRatingData)[0]) : 0);
+      setInitialRating(
+        yourRatingData ? Number(Object.values(yourRatingData)[0]) : 0
+      );
 
       // Compute othersComment (exclude auth.name)
       const othersCommentData = facultyComments
@@ -102,8 +118,13 @@ export default function FacultyDetails({ setClicked }) {
       setOthersComment(othersCommentData);
 
       // Compute facultyRating (average of all ratings)
-      const ratings = facultyRatings.map((rating) => Number(Object.values(rating)[0]));
-      const averageRating = ratings.length > 0 ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length : 0;
+      const ratings = facultyRatings.map((rating) =>
+        Number(Object.values(rating)[0])
+      );
+      const averageRating =
+        ratings.length > 0
+          ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
+          : 0;
       setFacultyRating(averageRating);
     } else {
       setOthersComment([]);
@@ -174,6 +195,17 @@ export default function FacultyDetails({ setClicked }) {
                   allFacultyComment={allFacultyComment}
                   setAllFacultyComment={setAllFacultyComment}
                 />
+              )}
+              {!auth && (
+                <Link href="/login">
+                  <div className="h-full w-full flex justify-center items-center">
+                    <button
+                      className={`text-[12px] lg:text-[16px] 2xl:text-[25px] cursor-pointer rounded-lg py-2 sm:px-6 px-4 ${"bg-green-800 hover:bg-green-700 text-white "}`}
+                    >
+                      {`You have to Login first`}
+                    </button>
+                  </div>
+                </Link>
               )}
             </div>
           </div>
@@ -354,6 +386,17 @@ export default function FacultyDetails({ setClicked }) {
                     allFacultyComment={allFacultyComment}
                     setAllFacultyComment={setAllFacultyComment}
                   />
+                )}
+                {!auth && (
+                  <Link href="/login">
+                    <div className="h-full w-full flex justify-center items-center">
+                      <button
+                        className={`text-[12px] lg:text-[16px] 2xl:text-[25px] cursor-pointer rounded-lg py-2 sm:px-6 px-4 ${"bg-green-800 hover:bg-green-700 text-white "}`}
+                      >
+                        {`You have to Login first`}
+                      </button>
+                    </div>
+                  </Link>
                 )}
               </div>
               <div className="w-full h-[40%] float-left">
