@@ -21,7 +21,7 @@ export default function YourComment({
   }, [yourComment]);
 
   const handleUpdateComment = async () => {
-    if (!auth?.name || !faculty?.initial) return;
+    if (!auth?.email || !faculty?.initial) return;
 
     setIsUpdating(true);
     try {
@@ -34,11 +34,11 @@ export default function YourComment({
       const updatedComments = newCommentInput.trim()
         ? [
             ...facultyComments.filter(
-              (comment) => Object.keys(comment)[0] !== auth.name
+              (comment) => comment.email !== auth.email
             ),
-            { [auth.name]: newCommentInput },
+            { email: auth.email, name: auth.name, comment: newCommentInput },
           ]
-        : facultyComments.filter((comment) => Object.keys(comment)[0] !== auth.name);
+        : facultyComments.filter((comment) => comment.email !== auth.email);
 
       // Update database
       await callChangeCommentsFaculty(faculty.initial, updatedComments);
@@ -85,7 +85,7 @@ export default function YourComment({
             value={newCommentInput}
             onChange={(e) => setNewCommentInput(e.target.value)}
             placeholder="Enter comment (max 70 chars)"
-            maxLength={70} // Restrict input to 50 characters
+            maxLength={70}
             className={`sm:p-2 p-1 rounded-sm sm:text-[10px] lg:text-[14px] 2xl:text-[22px] sm:rounded-md sm:border-2 border-[1px] text-[12px] xl:text-[16px] sm:w-[60%] w-[70%] ${
               theme
                 ? "bg-white text-[#0a0a0a] border-[#cccccc]"

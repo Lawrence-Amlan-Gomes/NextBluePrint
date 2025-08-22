@@ -96,9 +96,9 @@ export default function FacultyDetails({ setClicked }) {
 
       // Compute yourComment
       const yourCommentData = facultyComments.find(
-        (comment) => Object.keys(comment)[0] === auth.name
+        (comment) => comment.email === auth.email
       );
-      setYourComment(yourCommentData ? Object.values(yourCommentData)[0] : "");
+      setYourComment(yourCommentData ? yourCommentData.comment : "");
 
       // Compute initialRating
       const yourRatingData = facultyRatings.find(
@@ -108,12 +108,12 @@ export default function FacultyDetails({ setClicked }) {
         yourRatingData ? Number(Object.values(yourRatingData)[0]) : 0
       );
 
-      // Compute othersComment (exclude auth.name)
+      // Compute othersComment (exclude auth.email)
       const othersCommentData = facultyComments
-        .filter((comment) => Object.keys(comment)[0] !== auth.name)
+        .filter((comment) => comment.email !== auth.email)
         .map((comment) => ({
-          name: Object.keys(comment)[0],
-          comment: Object.values(comment)[0],
+          name: comment.name,
+          comment: comment.comment,
         }));
       setOthersComment(othersCommentData);
 
@@ -161,6 +161,8 @@ export default function FacultyDetails({ setClicked }) {
     setRatingLabel("Your Rating");
     console.log("Rating label set to: Your Rating");
   };
+
+  console.log(othersComment)
 
   return (
     <>

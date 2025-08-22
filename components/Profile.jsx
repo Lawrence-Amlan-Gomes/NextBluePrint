@@ -72,15 +72,15 @@ const Profile = () => {
           {auth ? (
             <>
               <div className="w-full sm:mt-5 sm:mb-5 mt-5 text-[14px] flex items-center justify-center font-bold">
-                {/* {isEditing ? (
+                {isEditing ? (
                   <input
                     className={`bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none text-center rounded-lg w-[70%] sm:w-full p-1 sm:p-3`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
-                ) : ( */}
+                ) : (
                   <div>{name}</div>
-                {/* )} */}
+                )}
               </div>
               <div className="w-full sm:mt-5 sm:mb-5 my-2 text-[12px] sm:text-[20px] flex items-center justify-center">
                 {auth.email}
@@ -158,15 +158,15 @@ const Profile = () => {
           {auth ? (
             <>
               <div className="w-full mt-5 mb-5 flex items-center justify-center font-bold text-[20px]">
-                {/* {isEditing ? (
+                {isEditing ? (
                   <input
                     className={`bg-transparent border-[2px] border-blue-700 focus:border-green-700 focus:outline-none text-center rounded-lg w-full p-3`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
-                ) : ( */}
+                ) : (
                   <div>{name}</div>
-                {/* )} */}
+                )}
               </div>
               <div className="w-full mt-5 mb-5 flex items-center justify-center">
                 {auth.email}
@@ -239,8 +239,8 @@ const Profile = () => {
               onClick={logout}
               className={`p-3 w-full text-white tracking-wider text-[18px] py-2 px-5 shadow-lg rounded-lg ${
                 theme
-                      ? "bg-red-700 hover:bg-red-800"
-                      : "bg-red-800 hover:bg-red-900"
+                  ? "bg-red-700 hover:bg-red-800"
+                  : "bg-red-800 hover:bg-red-900"
               }`}
             >
               Log Out
