@@ -1,6 +1,6 @@
-import { callUpdateUserComment } from "@/app/actions";
 import { useEffect, useState } from "react";
 import colors from "@/app/color/color";
+import { callChangeCommentsFaculty } from "@/app/actions";
 
 export default function YourComment({
   setAuth,
@@ -9,54 +9,48 @@ export default function YourComment({
   auth,
   faculty,
   theme,
+  allFacultyComment,
+  setAllFacultyComment,
 }) {
   const [newCommentInput, setNewCommentInput] = useState(yourComment);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-
   useEffect(() => {
-    // Initialize newCommentInput with yourComment when it changes
     setNewCommentInput(yourComment);
   }, [yourComment]);
 
   const handleUpdateComment = async () => {
-    if (!auth?.email || !faculty?.initial) return;
+    if (!auth?.name || !faculty?.initial) return;
 
     setIsUpdating(true);
     try {
-      // Get the current user's comments
-      const currentComments = auth.comment || [];
+      // Get current comments for the faculty
+      const facultyComments = allFacultyComment.find(
+        (item) => item.initial === faculty.initial
+      )?.comments || [];
 
-      // Create new comment array, updating only the comment for the current faculty
-      const newComment = currentComments
-        .filter(
-          (comment) =>
-            comment.initial?.toUpperCase() !== faculty.initial?.toUpperCase()
-        )
-        .concat({
-          initial: faculty.initial,
-          comment: newCommentInput,
-          stars:
-            currentComments.find(
-              (comment) =>
-                comment.initial?.toUpperCase() ===
-                faculty.initial?.toUpperCase()
-            )?.stars || 0,
-        });
+      // Update comments: remove user's comment if empty, otherwise update/add
+      const updatedComments = newCommentInput.trim()
+        ? [
+            ...facultyComments.filter(
+              (comment) => Object.keys(comment)[0] !== auth.name
+            ),
+            { [auth.name]: newCommentInput },
+          ]
+        : facultyComments.filter((comment) => Object.keys(comment)[0] !== auth.name);
 
-      setAuth((prev) => ({
-        ...prev,
-        comment: newComment,
-      }));
-
-      // Update the comment in the database
-      await callUpdateUserComment(auth.email, newComment);
+      // Update database
+      await callChangeCommentsFaculty(faculty.initial, updatedComments);
 
       // Update local state
-      setYourComment(newCommentInput);
+      setAllFacultyComment((prev) => [
+        ...prev.filter((item) => item.initial !== faculty.initial),
+        { initial: faculty.initial, comments: updatedComments },
+      ]);
 
-      // Show success pop-up
+      // Update local comment state
+      setYourComment(newCommentInput.trim());
       setShowSuccess(true);
     } catch (error) {
       console.error("Error updating comment:", error);
@@ -65,12 +59,12 @@ export default function YourComment({
     }
   };
 
-  // Hide success pop-up after 1 second
+  // Hide success pop-up after 2 seconds
   useEffect(() => {
     if (showSuccess) {
       const timer = setTimeout(() => {
         setShowSuccess(false);
-      }, 2000); // Kept at 2 seconds as per your latest code
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [showSuccess]);
@@ -90,7 +84,8 @@ export default function YourComment({
             type="text"
             value={newCommentInput}
             onChange={(e) => setNewCommentInput(e.target.value)}
-            placeholder="Enter your comment"
+            placeholder="Enter comment (max 70 chars)"
+            maxLength={70} // Restrict input to 50 characters
             className={`sm:p-2 p-1 rounded-sm sm:text-[10px] lg:text-[14px] 2xl:text-[22px] sm:rounded-md sm:border-2 border-[1px] text-[12px] xl:text-[16px] sm:w-[60%] w-[70%] ${
               theme
                 ? "bg-white text-[#0a0a0a] border-[#cccccc]"

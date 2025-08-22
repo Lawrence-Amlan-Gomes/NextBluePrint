@@ -2,7 +2,8 @@
 import {
   changePassword,
   changePhoto,
-  changePhotoFaculty,
+  changeCommentsFaculty,
+  changeRatingsFaculty,
   createFaculty,
   createUser,
   deleteFaculty,
@@ -13,6 +14,8 @@ import {
   updateFaculty,
   updateUser,
   updateUserComment,
+  getFacultyComments,
+  getFacultyRatings,
 } from "@/db/queries";
 import { dbConnect } from "@/services/mongo";
 import { revalidatePath } from "next/cache";
@@ -85,12 +88,34 @@ async function callUpdateUserComment(email, comment) {
   }
 }
 
-async function callUpdateFaculty(initial, name, department, courses) {
+async function callUpdateFaculty(initial, name, department, courses, photo) {
   await dbConnect();
   try {
-    await updateFaculty(initial, name, department, courses);
+    await updateFaculty(initial, name, department, courses, photo);
     revalidatePath("/");
   } catch (error) {
+    throw error;
+  }
+}
+
+async function callGetFacultyComments(initial) {
+  await dbConnect();
+  try {
+    const comments = await getFacultyComments(initial);
+    return comments; // Return the comments array
+  } catch (error) {
+    console.error("Error in callGetFacultyComments:", error);
+    throw error;
+  }
+}
+
+async function callGetFacultyRatings(initial) {
+  await dbConnect();
+  try {
+    const ratings = await getFacultyRatings(initial);
+    return ratings; // Return the ratings array
+  } catch (error) {
+    console.error("Error in callGetFacultyRatings:", error);
     throw error;
   }
 }
@@ -138,10 +163,19 @@ async function callChangePhoto(email, photo) {
   }
 }
 
-async function callChangePhotoFaculty(initial, photo) {
+async function callChangeCommentsFaculty(initial, comments) {
   await dbConnect();
   try {
-    await changePhotoFaculty(initial, photo);
+    await changeCommentsFaculty(initial, comments);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function callChangeRatingsFaculty(initial, stars) {
+  await dbConnect();
+  try {
+    await changeRatingsFaculty(initial, stars);
   } catch (error) {
     throw error;
   }
@@ -150,7 +184,8 @@ async function callChangePhotoFaculty(initial, photo) {
 export {
   callChangePassword,
   callChangePhoto,
-  callChangePhotoFaculty,
+  callChangeCommentsFaculty,
+  callChangeRatingsFaculty,
   callCreateFaculty,
   callDeleteFaculty,
   callUpdateDays,
@@ -162,4 +197,6 @@ export {
   performLogin,
   registerUser,
   signInWithGoogle,
+  callGetFacultyComments,
+  callGetFacultyRatings,
 };

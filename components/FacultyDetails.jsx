@@ -7,10 +7,18 @@ import StarRating from "./StarRating";
 import YourComment from "./YourComment";
 import { useRouter } from "next/navigation";
 import colors from "@/app/color/color";
+import { callGetFacultyComments, callGetFacultyRatings } from "@/app/actions";
+import Image from "next/image";
 
 export default function FacultyDetails({ setClicked }) {
   const { theme } = useTheme();
-  const { faculty, allFacultyCommentRating } = useFaculty();
+  const {
+    faculty,
+    allFacultyComment,
+    setAllFacultyComment,
+    allFacultyRating,
+    setAllFacultyRating,
+  } = useFaculty();
   const { auth, setAuth } = useAuth();
   const router = useRouter();
   const [yourComment, setYourComment] = useState("");
@@ -19,88 +27,91 @@ export default function FacultyDetails({ setClicked }) {
   const [showRatingSuccess, setShowRatingSuccess] = useState(false);
   const [initialRating, setInitialRating] = useState(0);
   const [ratingLabel, setRatingLabel] = useState("Your Rating");
-  const [facultyRating, setFacultyRating] = useState(0); // State to hold facultyRating
+  const [facultyRating, setFacultyRating] = useState(0);
 
-  // Redirect to login if not authenticated
+  // Redirect to /login if auth is not present
   useEffect(() => {
     if (!auth) {
+      console.log("No auth detected, redirecting to /login");
       router.push("/login");
     }
   }, [auth, router]);
 
-  // Compute yourComment and initialRating when auth and faculty change
+  // Fetch comments and ratings if not already in state
+  useEffect(() => {
+    const fetchFacultyCommentsAndRatings = async () => {
+      try {
+        // Check if comments for faculty.initial exist in allFacultyComment
+        if (!allFacultyComment.find((item) => item.initial === faculty.initial)) {
+          const comments = await callGetFacultyComments(faculty.initial);
+          setAllFacultyComment((prev) => [
+            ...prev.filter((item) => item.initial !== faculty.initial),
+            { initial: faculty.initial, comments },
+          ]);
+        }
+
+        // Check if ratings for faculty.initial exist in allFacultyRating
+        if (!allFacultyRating.find((item) => item.initial === faculty.initial)) {
+          const ratings = await callGetFacultyRatings(faculty.initial);
+          setAllFacultyRating((prev) => [
+            ...prev.filter((item) => item.initial !== faculty.initial),
+            { initial: faculty.initial, comments: ratings },
+          ]);
+        }
+      } catch (error) {
+        console.error("Error fetching faculty comments and ratings:", error);
+      }
+    };
+
+    if (faculty?.initial) {
+      console.log("Fetching faculty comments and ratings for:", faculty.initial);
+      fetchFacultyCommentsAndRatings();
+    }
+  }, [faculty.initial, allFacultyComment, allFacultyRating, setAllFacultyComment, setAllFacultyRating]);
+
+  // Compute yourComment, initialRating, othersComment, and facultyRating
   useEffect(() => {
     if (auth && faculty?.initial) {
-      console.log("auth-dependent useEffect running", { auth, faculty });
+      // Find faculty comments and ratings
+      const facultyComments = allFacultyComment.find(
+        (item) => item.initial === faculty.initial
+      )?.comments || [];
+      const facultyRatings = allFacultyRating.find(
+        (item) => item.initial === faculty.initial
+      )?.comments || [];
 
       // Compute yourComment
-      let computedYourComment = "";
-      if (Array.isArray(auth.comment)) {
-        for (const c of auth.comment) {
-          if (
-            c.initial &&
-            c.initial.toUpperCase() === faculty.initial.toUpperCase()
-          ) {
-            computedYourComment = c.comment || "";
-            break;
-          }
-        }
-      }
-      setYourComment(computedYourComment);
-      console.log("Setting yourComment:", computedYourComment);
+      const yourCommentData = facultyComments.find(
+        (comment) => Object.keys(comment)[0] === auth.name
+      );
+      setYourComment(yourCommentData ? Object.values(yourCommentData)[0] : "");
 
       // Compute initialRating
-      let rating = 0;
-      if (Array.isArray(auth.comment)) {
-        for (const comment of auth.comment) {
-          if (
-            comment.initial &&
-            comment.initial.toUpperCase() === faculty.initial.toUpperCase()
-          ) {
-            rating = Number(comment.stars) || 0;
-            console.log("Found matching comment:", comment, "Rating:", rating);
-            break;
-          }
-        }
-      } else {
-        console.log("Missing data for initialRating:", {
-          hasComments: !!auth.comment,
-          isArray: Array.isArray(auth.comment),
-          hasInitial: !!faculty.initial,
-        });
-      }
-      setInitialRating(rating);
-      console.log("Setting initialRating:", rating);
-    }
-  }, [auth, faculty]);
-
-  // Process others' comments and compute facultyRating
-  useEffect(() => {
-    if (faculty?.initial && Array.isArray(allFacultyCommentRating)) {
-      const facultyData = allFacultyCommentRating.find(
-        (item) => item.initial === faculty.initial.toUpperCase()
+      const yourRatingData = facultyRatings.find(
+        (rating) => Object.keys(rating)[0] === auth.name
       );
+      setInitialRating(yourRatingData ? Number(Object.values(yourRatingData)[0]) : 0);
 
-      // Compute facultyRating
-      const rating = facultyData?.stars || 0;
-      setFacultyRating(rating);
+      // Compute othersComment (exclude auth.name)
+      const othersCommentData = facultyComments
+        .filter((comment) => Object.keys(comment)[0] !== auth.name)
+        .map((comment) => ({
+          name: Object.keys(comment)[0],
+          comment: Object.values(comment)[0],
+        }));
+      setOthersComment(othersCommentData);
 
-      if (facultyData?.comment && auth) {
-        const othersCommentData = facultyData.comment
-          .filter((comment) => comment.username !== auth.name)
-          .map(({ username, comment }) => ({
-            name: username,
-            comment,
-          }));
-        setOthersComment(othersCommentData);
-      } else {
-        setOthersComment([]);
-      }
+      // Compute facultyRating (average of all ratings)
+      const ratings = facultyRatings.map((rating) => Number(Object.values(rating)[0]));
+      const averageRating = ratings.length > 0 ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length : 0;
+      setFacultyRating(averageRating);
     } else {
       setOthersComment([]);
-      setFacultyRating(0); // Default to 0 if no data
+      setFacultyRating(0);
+      setYourComment("");
+      setInitialRating(0);
     }
-  }, [faculty, allFacultyCommentRating, auth]);
+  }, [auth, faculty, allFacultyComment, allFacultyRating]);
 
   // Hide rating success pop-up after 1 second
   useEffect(() => {
@@ -116,6 +127,7 @@ export default function FacultyDetails({ setClicked }) {
   const handleRatingChange = (newRating) => {
     setShowRatingSuccess(true);
     console.log("FacultyDetails received new rating:", newRating);
+    setInitialRating(newRating); // Update initialRating immediately
   };
 
   // Handle hover events
@@ -159,6 +171,8 @@ export default function FacultyDetails({ setClicked }) {
                   auth={auth}
                   faculty={faculty}
                   theme={theme}
+                  allFacultyComment={allFacultyComment}
+                  setAllFacultyComment={setAllFacultyComment}
                 />
               )}
             </div>
@@ -181,7 +195,9 @@ export default function FacultyDetails({ setClicked }) {
                       <div
                         key={index}
                         className={`p-3 2xl:p-4 rounded-md border-[1px] ${
-                          theme ? "bg-[#eeeeee] border-[#dddddd]" : "bg-[#111111] border-[#222222]"
+                          theme
+                            ? "bg-[#eeeeee] border-[#dddddd]"
+                            : "bg-[#111111] border-[#222222]"
                         }`}
                       >
                         <p className="font-semibold text-sm md:text-[14px] sm:text-[12px] xl:text-[16px] 2xl:text-[20px] mb-1 2xl:mb-2">
@@ -194,7 +210,7 @@ export default function FacultyDetails({ setClicked }) {
                     )
                 )
               ) : (
-                <p className="text-sm italic text-gray-500 text-center md:text-[12px] ">
+                <p className="text-sm italic text-gray-500 text-center md:text-[12px]">
                   No comments from others yet.
                 </p>
               )}
@@ -207,16 +223,18 @@ export default function FacultyDetails({ setClicked }) {
           <div
             className={`w-full rounded-xl p-4 lg:p-6 2xl:p-10 flex flex-col items-center ${
               theme ? `${colors.cardLight}` : `${colors.cardDark}`
-            }`} 
+            }`}
           >
             {/* Faculty Image */}
             <div className="w-28 h-32 md:w-36 md:h-44 lg:w-[200px] lg:h-[225px] xl:w-[270px] xl:h-[290px] 2xl:w-[300px] 2xl:h-[380px] rounded-lg overflow-hidden shadow-md mb-4">
               {faculty?.photo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={faculty.photo}
                   alt={`${faculty?.name || "Faculty"} photo`}
+                  width={300}
+                  height={380}
                   className="w-full h-full object-cover"
+                  priority
                 />
               ) : (
                 <svg
@@ -237,10 +255,10 @@ export default function FacultyDetails({ setClicked }) {
             <p className="text-lg sm:text-[14px] leading-[25px] 2xl:leading-[40px] 2xl:mt-3 lg:mb-2 lg:text-[20px] xl:text-2xl 2xl:text-[35px] font-bold text-center">
               {faculty?.name || "N/A"}
             </p>
-            <p className="text-sm sm:text-[12px]  xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-80">
+            <p className="text-sm sm:text-[12px] xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-80">
               {faculty?.initial || "N/A"}
             </p>
-            <p className="text-sm sm:text-[12px]  xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-80">
+            <p className="text-sm sm:text-[12px] xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-80">
               {faculty?.department || "N/A"}
             </p>
             <p className="text-xs sm:text-[12px] xl:text-lg 2xl:text-[25px] 2xl:mt-2 text-center opacity-70">
@@ -249,7 +267,7 @@ export default function FacultyDetails({ setClicked }) {
 
             {/* Average Rating */}
             <div className="flex justify-center items-center 2xl:mt-4">
-              {facultyRating != null && <StarRating rating={facultyRating} />}
+              {facultyRating !== null && <StarRating rating={facultyRating} />}
             </div>
 
             {/* Your Rating */}
@@ -260,20 +278,16 @@ export default function FacultyDetails({ setClicked }) {
                 </p>
                 <InteractiveStarRating
                   initialRating={initialRating}
-                  onRatingChange={(newRating) => {
-                    setShowRatingSuccess(true);
-                    console.log(
-                      "FacultyDetails received new rating:",
-                      newRating
-                    );
-                  }}
+                  onRatingChange={handleRatingChange}
                   disabled={isUpdatingRating}
                   theme={theme}
                   auth={auth}
                   faculty={faculty}
                   setAuth={setAuth}
-                  onHoverStart={() => setRatingLabel("Change Rating")}
-                  onHoverEnd={() => setRatingLabel("Your Rating")}
+                  onHoverStart={handleHoverStart}
+                  onHoverEnd={handleHoverEnd}
+                  allFacultyRating={allFacultyRating}
+                  setAllFacultyRating={setAllFacultyRating}
                 />
               </div>
             )}
@@ -314,7 +328,7 @@ export default function FacultyDetails({ setClicked }) {
                 <div className="w-[40%] h-full float-left flex text-[11px] items-center justify-center">
                   <button
                     onClick={() => setClicked(false)}
-                    className={` rounded-sm h-[25px] w-[60px] font-semibold ${
+                    className={`rounded-sm h-[25px] w-[60px] font-semibold ${
                       theme
                         ? "bg-red-500 text-white hover:bg-red-600"
                         : "bg-red-700 text-white hover:bg-red-800"
@@ -337,6 +351,8 @@ export default function FacultyDetails({ setClicked }) {
                     auth={auth}
                     faculty={faculty}
                     theme={theme}
+                    allFacultyComment={allFacultyComment}
+                    setAllFacultyComment={setAllFacultyComment}
                   />
                 )}
               </div>
@@ -356,6 +372,8 @@ export default function FacultyDetails({ setClicked }) {
                       setAuth={setAuth}
                       onHoverStart={handleHoverStart}
                       onHoverEnd={handleHoverEnd}
+                      allFacultyRating={allFacultyRating}
+                      setAllFacultyRating={setAllFacultyRating}
                     />
                     {showRatingSuccess && (
                       <div
@@ -378,18 +396,20 @@ export default function FacultyDetails({ setClicked }) {
               <div className="flex flex-col items-center">
                 <div className="w-[60px] h-[70px] mb-2 mt-2 rounded-lg overflow-hidden">
                   {faculty?.photo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={faculty.photo}
                       alt={`${faculty?.name || "Faculty"} photo`}
+                      width={60}
+                      height={70}
                       className="w-full h-full object-cover rounded-sm"
+                      priority
                     />
                   ) : (
                     <svg
                       className={`w-full h-full ${
                         theme
-                          ? "bg-[#d5d5d5] text-[#0a0a0a] "
-                          : "bg-[#333333] text-[#f0f0f0] "
+                          ? "bg-[#d5d5d5] text-[#0a0a0a]"
+                          : "bg-[#333333] text-[#f0f0f0]"
                       }`}
                       fill="currentColor"
                       viewBox="0 0 24 24"
@@ -405,7 +425,7 @@ export default function FacultyDetails({ setClicked }) {
                   {faculty?.initial || "N/A"}
                 </p>
                 <div className="flex justify-center items-center">
-                  {facultyRating != null && (
+                  {facultyRating !== null && (
                     <StarRating rating={facultyRating} />
                   )}
                 </div>

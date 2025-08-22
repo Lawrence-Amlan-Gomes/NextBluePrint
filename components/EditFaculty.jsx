@@ -1,23 +1,24 @@
 "use client";
 import { useTheme } from "@/app/hooks/useTheme";
-import { useEffect, useState, useRef } from "react";
+import { useFaculty } from "@/app/hooks/usefaculty";
+import { useEffect, useState } from "react";
 import {
   callCreateFaculty,
   callUpdateFaculty,
-  getAllFaculties2,
   callDeleteFaculty,
-  callChangePhotoFaculty,
 } from "@/app/actions";
+import landingFaculties from "@/app/landingFaculties/landingFaculties";
 
 const EditFaculty = () => {
   const { theme } = useTheme();
+  const { faculties } = useFaculty();
   const [addLoading, setAddLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [name, setName] = useState("");
   const [initial, setInitial] = useState("");
   const [photo, setPhoto] = useState("");
-  const [department, setDepartment] = useState("");
+  const [department, setDepartment] = useState("CSE");
   const [courses, setCourses] = useState("");
   const [initialError, setInitialError] = useState({
     iserror: false,
@@ -27,24 +28,15 @@ const EditFaculty = () => {
   const [canAdd, setCanAdd] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [editPic, setEditPic] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const inputRef = useRef(null);
   const [selectedFaculty, setSelectedFaculty] = useState(null);
 
+  // Set initials from faculties context
   useEffect(() => {
-    const fetchInitials = async () => {
-      try {
-        const faculties = await getAllFaculties2();
-        const initials = faculties.map((faculty) => faculty.initial);
-        setAllInitials(initials);
-      } catch (error) {
-        console.error("Error fetching faculties:", error);
-      }
-    };
-    fetchInitials();
-  }, []);
+    const initials = faculties.map((faculty) => faculty.initial);
+    setAllInitials(initials);
+  }, [faculties]);
 
+  // Handle initial input and faculty selection based on landingFaculties
   useEffect(() => {
     const upperInitial = initial.toUpperCase();
     if (upperInitial === "") {
@@ -53,95 +45,30 @@ const EditFaculty = () => {
       setCanEdit(false);
       setSelectedFaculty(null);
       setPhoto("");
-    } else if (allInitials.map((i) => i.toUpperCase()).includes(upperInitial)) {
+    } else if (
+      landingFaculties.some((f) => f.initial.toUpperCase() === upperInitial)
+    ) {
       setInitialError({ iserror: false, error: "" });
-      setCanAdd(false);
-      setCanEdit(true);
-      const fetchFaculty = async () => {
-        try {
-          const faculties = await getAllFaculties2();
-          const faculty = faculties.find(
-            (f) => f.initial.toUpperCase() === upperInitial
-          );
-          setSelectedFaculty(faculty || null);
-          if (faculty && faculty.photo) {
-            setPhoto(faculty.photo);
-          } else {
-            setPhoto("");
-          }
-        } catch (error) {
-          console.error("Error fetching faculty:", error);
-          setSelectedFaculty(null);
-          setPhoto("");
-        }
-      };
-      fetchFaculty();
+      setCanAdd(false); // Deactivate Add if initial exists in landingFaculties
+      setCanEdit(true); // Activate Update and Delete
+      const faculty =
+        faculties.find((f) => f.initial.toUpperCase() === upperInitial) ||
+        landingFaculties.find((f) => f.initial.toUpperCase() === upperInitial);
+      setSelectedFaculty(faculty || null);
+      setPhoto(faculty?.photo || "");
     } else {
       setInitialError({ iserror: false, error: "" });
-      setCanAdd(true);
-      setCanEdit(false);
+      setCanAdd(true); // Activate Add if initial does not exist
+      setCanEdit(false); // Deactivate Update and Delete
       setSelectedFaculty(null);
       setPhoto("");
     }
-  }, [initial, allInitials]);
+  }, [initial, allInitials, faculties]);
 
   useEffect(() => {
     setCanAdd(canAdd && !initialError.iserror);
     setCanEdit(canEdit && !initialError.iserror);
   }, [initialError.iserror, canAdd, canEdit]);
-
-  useEffect(() => {
-    if (editPic) {
-      setTimeout(() => {
-        setEditPic(false);
-      }, 5000);
-    }
-  }, [editPic]);
-
-  const handleImageClick = () => {
-    inputRef.current.click();
-  };
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (!validTypes.includes(file.type)) {
-      alert("Error: Only JPG, JPEG, and PNG files are allowed!");
-      return;
-    }
-
-    setIsUploading(true);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = async () => {
-      const imageData = reader.result;
-      setPhoto(imageData);
-      if (initial && canEdit) {
-        try {
-          await callChangePhotoFaculty(initial.toUpperCase(), imageData);
-          alert("Photo uploaded successfully!");
-        } catch (error) {
-          alert("Error: Failed to upload the photo!");
-        }
-      }
-      setIsUploading(false);
-    };
-  };
-
-  const handleImageDelete = async () => {
-    if (!initial || !canEdit) return;
-
-    setPhoto("");
-    try {
-      await callChangePhotoFaculty(initial.toUpperCase(), "");
-      alert("Photo deleted successfully!");
-    } catch (error) {
-      alert("Error: Failed to delete photo!");
-    }
-  };
 
   const handleAddFaculty = async () => {
     if (!canAdd) return;
@@ -149,11 +76,9 @@ const EditFaculty = () => {
     setAddLoading(true);
     try {
       if (sureSubmit) {
-        const faculties = await getAllFaculties2();
-        const currentInitials = faculties.map((faculty) => faculty.initial);
         const upperInitial = initial.toUpperCase();
         if (
-          currentInitials.map((i) => i.toUpperCase()).includes(upperInitial)
+          landingFaculties.some((f) => f.initial.toUpperCase() === upperInitial)
         ) {
           setCanAdd(false);
           setCanEdit(true);
@@ -170,19 +95,14 @@ const EditFaculty = () => {
             : [],
         };
         await callCreateFaculty(facultyData);
-        if (photo) {
-          await callChangePhotoFaculty(upperInitial, photo);
-        }
         setAddLoading(false);
         setName("");
         setInitial("");
         setPhoto("");
-        setDepartment("");
+        setDepartment("CSE");
         setCourses("");
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
-        const updatedFaculties = await getAllFaculties2();
-        setAllInitials(updatedFaculties.map((faculty) => faculty.initial));
         setSelectedFaculty(null);
       } else {
         setAddLoading(false);
@@ -199,11 +119,14 @@ const EditFaculty = () => {
     setEditLoading(true);
     try {
       if (sureSubmit) {
-        const faculties = await getAllFaculties2();
         const upperInitial = initial.toUpperCase();
-        const existingFaculty = faculties.find(
-          (faculty) => faculty.initial.toUpperCase() === upperInitial
-        );
+        const existingFaculty =
+          faculties.find(
+            (faculty) => faculty.initial.toUpperCase() === upperInitial
+          ) ||
+          landingFaculties.find(
+            (faculty) => faculty.initial.toUpperCase() === upperInitial
+          );
         if (!existingFaculty) {
           setCanEdit(false);
           setCanAdd(true);
@@ -221,11 +144,9 @@ const EditFaculty = () => {
           upperInitial,
           updatedName,
           updatedDepartment,
-          updatedCourses
+          updatedCourses,
+          photo // Use current photo state, which could be ""
         );
-        if (photo !== existingFaculty.photo) {
-          await callChangePhotoFaculty(upperInitial, photo);
-        }
         setEditLoading(false);
         setName("");
         setInitial("");
@@ -234,8 +155,6 @@ const EditFaculty = () => {
         setCourses("");
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
-        const updatedFaculties = await getAllFaculties2();
-        setAllInitials(updatedFaculties.map((faculty) => faculty.initial));
         setSelectedFaculty(null);
       } else {
         setEditLoading(false);
@@ -253,7 +172,6 @@ const EditFaculty = () => {
     try {
       if (sureDelete) {
         const upperInitial = initial.toUpperCase();
-
         const success = await callDeleteFaculty(upperInitial);
         if (success) {
           setDeleteLoading(false);
@@ -264,8 +182,6 @@ const EditFaculty = () => {
           setCourses("");
           setShowSuccess(true);
           setTimeout(() => setShowSuccess(false), 1000);
-          const updatedFaculties = await getAllFaculties2();
-          setAllInitials(updatedFaculties.map((faculty) => faculty.initial));
           setSelectedFaculty(null);
         } else {
           setDeleteLoading(false);
@@ -347,14 +263,27 @@ const EditFaculty = () => {
               placeholder="Enter courses (comma-separated)"
               value={courses}
               onChange={(e) => setCourses(e.target.value)}
+              className={`w-full p-2 rounded-md ${
+                theme ? "border-zinc-300" : "border-zinc-700"
+              } ${theme ? "bg-white" : "bg-zinc-800 text-white"}`}
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="photo"
+              placeholder="Enter photo URL"
+              value={photo}
+              onChange={(e) => setPhoto(e.target.value)}
               className={`w-full p-2 rounded-md mb-5 ${
                 theme ? "border-zinc-300" : "border-zinc-700"
               } ${theme ? "bg-white" : "bg-zinc-800 text-white"}`}
             />
           </div>
 
-          <div className="w-full">
-            <div className="w-[40%] float-left">
+          <div className="w-full flex justify-center">
+            <div className="w-[40%]">
               <div className="w-full flex justify-center items-center">
                 <button
                   onClick={handleAddFaculty}
@@ -402,79 +331,6 @@ const EditFaculty = () => {
                   {deleteLoading ? `Deleting...` : `Delete Faculty`}
                 </button>
               </div>
-            </div>
-            <div className="w-[60%] float-left flex flex-col items-center">
-              <div
-                className="bg-white w-[150px] h-[150px] rounded-full overflow-hidden flex items-center justify-center relative cursor-pointer"
-                onClick={() => {
-                  if (canAdd || canEdit) {
-                    setEditPic((prev) => !prev);
-                  }
-                }}
-              >
-                {isUploading ? (
-                  <div className="w-full h-full flex justify-center items-center text-lg font-bold text-zinc-600">
-                    Uploading...
-                  </div>
-                ) : photo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={photo}
-                    alt="faculty photo"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className={`${
-                      theme ? "bg-[#ffffff] " : "bg-zinc-800 "
-                    } w-full h-full flex justify-center items-center text-[100px] font-bold text-black p-5 `}
-                  >
-                    <svg
-                      className={`w-full h-full ${
-                        theme ? "text-[#0a0a0a] " : "text-[#f0f0f0] "
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              {editPic && (
-                <div className="w-full flex justify-center mt-2">
-                  <input
-                    className="hidden"
-                    type="file"
-                    name="file"
-                    ref={inputRef}
-                    accept="image/jpeg, image/jpg, image/png"
-                    onChange={handleImageUpload}
-                  />
-                  <button
-                    type="button"
-                    className={`text-blue-700 py-2 rounded-full px-3 w-[46%] m-[2%] ${
-                      theme
-                        ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
-                        : "bg-[#161616] hover:bg-[#202020]"
-                    }`}
-                    onClick={handleImageClick}
-                  >
-                    Upload
-                  </button>
-                  <button
-                    className={`text-red-700 py-2 rounded-full px-3 w-[46%] m-[2%] ${
-                      theme
-                        ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
-                        : "bg-[#161616] hover:bg-[#202020]"
-                    }`}
-                    onClick={handleImageDelete}
-                    disabled={!canEdit}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>

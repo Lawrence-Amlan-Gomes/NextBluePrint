@@ -199,7 +199,6 @@ const RegistrationForm = () => {
             password: password,
             photo: "",
             paymentType: "Free",
-            comment: [{ initial: "f1", comment: "", stars: 0 }],
             createdAt: new Date(),
             updatedAt: new Date(),
             isAdmin: false,

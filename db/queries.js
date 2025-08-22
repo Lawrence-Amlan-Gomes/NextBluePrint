@@ -16,9 +16,36 @@ async function getAllFaculties() {
   return replaceMongoIdInArray(allfacultiess);
 }
 
+async function getFacultyComments(initial) {
+  try {
+    const faculty = await facultyModel.findOne({ initial: initial.toUpperCase() }, { comments: 1 }).lean();
+    if (!faculty) {
+      throw new Error(`Faculty with initial ${initial} not found`);
+    }
+    return faculty.comments || [];
+  } catch (error) {
+    console.error(`Error fetching comments for faculty with initial ${initial}:`, error);
+    throw error;
+  }
+}
+
+async function getFacultyRatings(initial) {
+  try {
+    const faculty = await facultyModel.findOne({ initial: initial.toUpperCase() }, { stars: 1 }).lean();
+    if (!faculty) {
+      throw new Error(`Faculty with initial ${initial} not found`);
+    }
+    return faculty.stars || []; // Fixed: Return stars instead of comments
+  } catch (error) {
+    console.error(`Error fetching ratings for faculty with initial ${initial}:`, error);
+    throw error;
+  }
+}
+
 async function createUser(user) {
   return await userModel.create(user);
 }
+
 async function createFaculty(user) {
   return await facultyModel.create(user);
 }
@@ -47,10 +74,10 @@ async function updateUserComment(email, comment) {
   await userModel.updateOne({ email: email }, { $set: { comment: comment } });
 }
 
-async function updateFaculty(initial, name, department, courses) {
+async function updateFaculty(initial, name, department, courses, photo) {
   await facultyModel.updateOne(
     { initial: initial },
-    { $set: { name: name, department: department, courses: courses } }
+    { $set: { name: name, department: department, courses: courses, photo: photo } }
   );
 }
 
@@ -66,17 +93,25 @@ async function changePhoto(email, photo) {
   await userModel.updateOne({ email: email }, { $set: { photo: photo } });
 }
 
-async function changePhotoFaculty(initial, photo) {
+async function changeCommentsFaculty(initial, comments) {
   await facultyModel.updateOne(
     { initial: initial },
-    { $set: { photo: photo } }
+    { $set: { comments: comments } }
+  );
+}
+
+async function changeRatingsFaculty(initial, stars) {
+  await facultyModel.updateOne(
+    { initial: initial },
+    { $set: { stars: stars } }
   );
 }
 
 export {
   changePassword,
   changePhoto,
-  changePhotoFaculty,
+  changeCommentsFaculty,
+  changeRatingsFaculty,
   createFaculty,
   createUser,
   deleteFaculty,
@@ -87,4 +122,6 @@ export {
   updateFaculty,
   updateUser,
   updateUserComment,
+  getFacultyComments,
+  getFacultyRatings,
 };

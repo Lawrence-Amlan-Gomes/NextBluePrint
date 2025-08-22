@@ -1,24 +1,18 @@
 "use client";
-import { getAllFaculties2, getAllUsers2 } from "@/app/actions";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useFaculty } from "@/app/hooks/usefaculty";
 import { useTheme } from "@/app/hooks/useTheme";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import FacultyCardLandingPage from "./FacultyCardLandingPage";
 import FacultyDetails from "./FacultyDetails";
-import Footer from "./Footer";
-import { useFaculty } from "@/app/hooks/usefaculty";
+import landingFaculties from "@/app/landingFaculties/landingFaculties";
 
 export default function LandingPage() {
   const { theme } = useTheme();
   const { auth } = useAuth();
   const {
-    allFacultyCommentRating,
-    setAllFacultyCommentRating,
-    firstTime,
-    setFirstTime,
     faculties,
-    setFaculties,
     filteredFaculties,
     setFilteredFaculties,
   } = useFaculty();
@@ -26,91 +20,17 @@ export default function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [clicked, setClicked] = useState(false);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!auth) {
-      router.push("/login");
-    }
-  }, [auth, router]);
+  console.log(landingFaculties);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch faculties
-        const facultyData = await getAllFaculties2();
-        setFaculties(facultyData);
-        setFilteredFaculties(facultyData);
-
-        // Fetch users
-        const userData = await getAllUsers2();
-
-        // Process user comments to create allFacultyCommentRating
-        const facultyCommentsMap = {};
-
-        userData.forEach((user) => {
-          if (user.comment && Array.isArray(user.comment)) {
-            user.comment.forEach(({ initial, comment, stars }) => {
-              if (initial) {
-                const upperInitial = initial.toUpperCase();
-                if (!facultyCommentsMap[upperInitial]) {
-                  facultyCommentsMap[upperInitial] = {
-                    comments: [],
-                    totalStars: 0,
-                    count: 0,
-                  };
-                }
-                facultyCommentsMap[upperInitial].comments.push({
-                  username: user.name,
-                  comment,
-                });
-                facultyCommentsMap[upperInitial].totalStars += stars || 0;
-                facultyCommentsMap[upperInitial].count += 1;
-              }
-            });
-          }
-        });
-
-        // Convert map to desired array format
-        const facultyCommentRatingArray = Object.keys(facultyCommentsMap).map(
-          (initial) => ({
-            initial,
-            comment: facultyCommentsMap[initial].comments,
-            stars: Math.ceil(
-              facultyCommentsMap[initial].totalStars /
-                facultyCommentsMap[initial].count || 0
-            ),
-          })
-        );
-
-        setAllFacultyCommentRating(facultyCommentRatingArray);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [
-    firstTime,
-    setAllFacultyCommentRating,
-    setFaculties,
-    setFilteredFaculties,
-    setFirstTime,
-  ]);
-
-  useEffect(() => {
-    const filtered = faculties.filter(
+    const filtered = landingFaculties.filter(
       (faculty) =>
         faculty.initial.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faculty.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        faculty.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         faculty.department.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredFaculties(filtered);
   }, [searchQuery, faculties, setFilteredFaculties]);
-
-  useEffect(() => {
-    if (!auth) {
-      router.push("/login");
-    }
-  }, [clicked, auth, router]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -162,21 +82,7 @@ export default function LandingPage() {
               <div className="col-span-full text-center text-[25px] sm:text-[40px] text-blue-600">
                 No faculties found matching your search.
               </div>
-            ) : (
-              Array.from({ length: 50 }, (_, index) => ({
-                initial: `F${index + 1}`,
-                name: "animate",
-                department: "General Studies",
-                photo: null,
-              })).map((faculty) => (
-                <FacultyCardLandingPage
-                  filteredFaculties={filteredFaculties}
-                  key={faculty.initial}
-                  faculty={faculty}
-                  setClicked={setClicked}
-                />
-              ))
-            )}
+            ) : <></>}
           </div>
         </div>
       </div>

@@ -20,6 +20,14 @@ const schema = new Schema({
   courses:{
     required: false,
     type: Array,
+  },
+  stars:{
+    required: false,
+    type: Array
+  },
+  comments:{
+    required: false,
+    type: Array
   }
 });
 

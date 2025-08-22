@@ -6,7 +6,8 @@ import { FacultyContext } from "../contexts";
 
 export default function FacultyProvider({ children }) {
   const [faculty, setFaculty] = useState({});
-  const [allFacultyCommentRating, setAllFacultyCommentRating] = useState({});
+  const [allFacultyComment, setAllFacultyComment] = useState([]);
+  const [allFacultyRating, setAllFacultyRating] = useState([]);
   const [firstTime, setFirstTime] = useState(true);
   const [faculties, setFaculties] = useState([]);
   const [filteredFaculties, setFilteredFaculties] = useState([]);
@@ -16,8 +17,10 @@ export default function FacultyProvider({ children }) {
       value={{
         faculty,
         setFaculty,
-        allFacultyCommentRating,
-        setAllFacultyCommentRating,
+        allFacultyComment,
+        setAllFacultyComment,
+        allFacultyRating,
+        setAllFacultyRating,
         firstTime,
         setFirstTime,
         faculties,

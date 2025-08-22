@@ -63,69 +63,6 @@ const LoginForm = () => {
   }, [isTyping]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch faculties
-        const facultyData = await getAllFaculties2();
-        setFaculties(facultyData);
-        setFilteredFaculties(facultyData);
-
-        // Fetch users
-        const userData = await getAllUsers2();
-
-        // Process user comments to create allFacultyCommentRating
-        const facultyCommentsMap = {};
-
-        userData.forEach((user) => {
-          if (user.comment && Array.isArray(user.comment)) {
-            user.comment.forEach(({ initial, comment, stars }) => {
-              if (initial) {
-                const upperInitial = initial.toUpperCase();
-                if (!facultyCommentsMap[upperInitial]) {
-                  facultyCommentsMap[upperInitial] = {
-                    comments: [],
-                    totalStars: 0,
-                    count: 0,
-                  };
-                }
-                facultyCommentsMap[upperInitial].comments.push({
-                  username: user.name,
-                  comment,
-                });
-                facultyCommentsMap[upperInitial].totalStars += stars || 0;
-                facultyCommentsMap[upperInitial].count += 1;
-              }
-            });
-          }
-        });
-
-        // Convert map to desired array format
-        const facultyCommentRatingArray = Object.keys(facultyCommentsMap).map(
-          (initial) => ({
-            initial,
-            comment: facultyCommentsMap[initial].comments,
-            stars: Math.ceil(
-              facultyCommentsMap[initial].totalStars /
-                facultyCommentsMap[initial].count || 0
-            ),
-          })
-        );
-
-        setAllFacultyCommentRating(facultyCommentRatingArray);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [
-    firstTime,
-    setAllFacultyCommentRating,
-    setFaculties,
-    setFilteredFaculties,
-    setFirstTime,
-  ]);
-
-  useEffect(() => {
     if (email != "") {
       setEmailError({
         iserror: false,
