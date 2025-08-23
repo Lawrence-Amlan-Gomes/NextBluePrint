@@ -84,8 +84,8 @@ export default function YourComment({
             type="text"
             value={newCommentInput}
             onChange={(e) => setNewCommentInput(e.target.value)}
-            placeholder="Enter comment (max 70 chars)"
-            maxLength={70}
+            placeholder="Enter comment (max 100 chars)"
+            maxLength={100}
             className={`sm:p-2 p-1 rounded-sm sm:text-[10px] lg:text-[14px] 2xl:text-[22px] sm:rounded-md sm:border-2 border-[1px] text-[12px] xl:text-[16px] sm:w-[60%] w-[70%] ${
               theme
                 ? "bg-white text-[#0a0a0a] border-[#cccccc]"
