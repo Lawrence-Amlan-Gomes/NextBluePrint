@@ -3,7 +3,7 @@ import { ThemeContext } from "../contexts";
 import { useContext } from "react";
 
 export const useTheme = () => {
-  const { theme, setTheme } = useContext(ThemeContext);
+  const { theme, setTheme, sidebarOpen, setSidebarOpen } = useContext(ThemeContext);
 
-  return { theme, setTheme };
+  return { theme, setTheme, sidebarOpen, setSidebarOpen };
 };

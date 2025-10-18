@@ -3,32 +3,44 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import EachField from "./EachField";
-import {
-  performLogin,
-  getAllUsers2,
-  signInWithGoogle,
-  getAllFaculties2,
-} from "@/app/actions";
+import { performLogin, getAllUsers2, signInWithGoogle } from "@/app/actions";
 import { useAuth } from "@/app/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/hooks/useTheme";
 import Image from "next/image";
 import googleIcon from "../../public/googleIcon.png";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import colors from "@/app/color/color";
-import { useFaculty } from "@/app/hooks/usefaculty";
+import { callChangePhoto, callUpdateUser } from "@/app/actions";
+
+async function hashPassword(password, iterations = 10000) {
+  try {
+    const fixedSalt = "fixedSalt1234567890abcdef";
+    const encodedPassword = new TextEncoder().encode(password);
+    const encodedSalt = new TextEncoder().encode(fixedSalt);
+
+    const combined = new Uint8Array(
+      encodedPassword.length + encodedSalt.length
+    );
+    combined.set(encodedPassword, 0);
+    combined.set(encodedSalt, encodedPassword.length);
+
+    let data = combined;
+    for (let i = 0; i < iterations; i++) {
+      data = new Uint8Array(await crypto.subtle.digest("SHA-256", data));
+    }
+
+    const hash = Array.from(data)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return hash;
+  } catch (error) {
+    console.error("Error hashing password:", error);
+    throw error;
+  }
+}
 
 const LoginForm = () => {
-  const {
-    allFacultyCommentRating,
-    setAllFacultyCommentRating,
-    firstTime,
-    setFirstTime,
-    faculties,
-    setFaculties,
-    filteredFaculties,
-    setFilteredFaculties,
-  } = useFaculty();
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
@@ -63,7 +75,7 @@ const LoginForm = () => {
   }, [isTyping]);
 
   useEffect(() => {
-    if (email != "") {
+    if (email !== "") {
       setEmailError({
         iserror: false,
         error: "",
@@ -74,7 +86,7 @@ const LoginForm = () => {
         error: "Email is required",
       });
     }
-    if (password != "") {
+    if (password !== "") {
       setPasswordError({
         iserror: false,
         error: "",
@@ -115,22 +127,26 @@ const LoginForm = () => {
     if (!emailError.iserror && !passwordError.iserror) {
       setIsLoading(true);
       try {
+        const hashedPassword = await hashPassword(password);
         const found = await performLogin({
           email: email,
-          password: password,
+          password: hashedPassword,
         });
         if (found) {
+          if (found.firstTimeLogin && session?.user) {
+            found.photo = session.user.image;
+          }
           setAuth(found);
-          router.push("/");
+          router.push("/chat");
           setIsLoading(false);
         } else {
-          setEmailError({ 
+          setEmailError({
             iserror: true,
-            error: "Email or password is incorrect",
+            error: "",
           });
           setPasswordError({
             iserror: true,
-            error: "Email or password is incorrect",
+            error: "",
           });
           setMainError({
             isError: true,
@@ -142,8 +158,9 @@ const LoginForm = () => {
         console.log("Something went wrong");
         setMainError({
           isError: true,
-          error: "SomeThing Went Wrong",
+          error: "Something Went Wrong",
         });
+        setIsLoading(false);
       }
     }
   };
@@ -158,10 +175,12 @@ const LoginForm = () => {
         const matchedUser = users.find(
           (user) => user.email === session.user.email
         );
-
         if (matchedUser) {
+          if (matchedUser.firstTimeLogin) {
+            matchedUser.photo = session.user.image;
+          }
           setAuth(matchedUser);
-          router.push("/");
+          router.push("/chat");
         } else {
           setGoogleError({
             isError: true,
@@ -201,7 +220,7 @@ const LoginForm = () => {
         <div className="text-[20px] lg:text-[25px] 2xl:text-[40px] font-bold sm:mb-10">
           Login
         </div>
-        {/* Trick the browser with this fake email and password field */}
+        {/* Trick the browser with fake email and password fields */}
         <div className="opacity-0">
           <EachField
             label="fake"
@@ -260,7 +279,7 @@ const LoginForm = () => {
           onClick={submitForm}
           className={`text-[12px] lg:text-[16px] 2xl:text-[25px] cursor-pointer rounded-lg mt-6 sm:mt-12 py-2 sm:px-6 px-4 ${
             !emailError.iserror && !passwordError.iserror
-              ? "bg-green-800 hover:bg-green-700 text-white "
+              ? "bg-green-800 hover:bg-green-700 text-white"
               : theme
               ? "bg-[#dddddd] text-[#888888]"
               : "bg-[#222222] text-[#888888]"
@@ -301,7 +320,10 @@ const LoginForm = () => {
         </div>
         <div className="sm:mt-18 mt-5 text-[12px] lg:text-[16px] 2xl:text-[26px]">
           No Account?{" "}
-          <Link href="/register" className="text-blue-600 hover:text-blue-500">
+          <Link
+            href="/register"
+            className={`${colors.keyColorText} hover:text-blue-500`}
+          >
             Register
           </Link>
         </div>

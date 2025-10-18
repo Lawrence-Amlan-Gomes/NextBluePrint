@@ -1,5 +1,5 @@
 "use client";
-import { callChangePhoto } from "@/app/actions";
+import { callChangePhoto, callUpdateUser } from "@/app/actions";
 import { useAuth } from "@/app/hooks/useAuth";
 import { useTheme } from "@/app/hooks/useTheme";
 import { useEffect, useRef, useState } from "react";
@@ -56,6 +56,7 @@ export default function ProfilePic() {
       try {
         await callChangePhoto(auth.email, imageData);
         alert("Uploaded successfully!"); // ✅ Success alert
+        await callUpdateUser(auth.email, auth.name, false);
       } catch (error) {
         alert("Error: Failed to upload the image!");
       } finally {
@@ -79,6 +80,7 @@ export default function ProfilePic() {
     try {
       await callChangePhoto(auth.email, "");
       alert("Profile picture deleted successfully!");
+      await callUpdateUser(auth.email, auth.name, false);
     } catch (error) {
       alert("Error: Failed to delete profile picture!");
     }
@@ -92,7 +94,7 @@ export default function ProfilePic() {
           onClick={() => setEditPic((prev) => !prev)}
         >
           {isUploading ? ( // 🔄 Show uploading message
-            <div className="w-full h-full flex justify-center items-center text-lg font-bold text-gray-600">
+            <div className={`w-full h-full flex justify-center items-center text-lg font-bold ${theme ? "bg-black text-white" : "bg-white text-black"}`}>
               Uploading...
             </div>
           ) : image ? (
@@ -130,20 +132,20 @@ export default function ProfilePic() {
           />
           <button
             type="button"
-            className={`text-blue-700 py-2 rounded-full px-3 w-[46%] m-[2%] box-border float-left ${
+            className={`sm:py-2 py-1 text-blue-700 text-[12px] sm:text-[16px] rounded-lg border-[2px] border-blue-700 px-3 w-[56%] m-[2%] box-border float-left ${
               theme
-                ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
-                : "bg-[#161616] hover:bg-[#202020]"
+                ? ""
+                : ""
             }`}
             onClick={handleImageClick}
           >
             Upload
           </button>
           <button
-            className={`text-red-700 py-2 rounded-full px-3 w-[46%] m-[2%] box-border float-left ${
+            className={`sm:py-2 py-1 rounded-lg text-red-700 text-[12px] sm:text-[16px] border-[2px] border-red-700 px-3 w-[36%] m-[2%] box-border float-left ${
               theme
-                ? "bg-[#c9c9c9] hover:bg-[#bdbdbd]"
-                : "bg-[#161616] hover:bg-[#202020]"
+                ? ""
+                : ""
             }`}
             onClick={handleImageDelete}
           >

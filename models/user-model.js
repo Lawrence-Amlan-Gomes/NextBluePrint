@@ -13,25 +13,13 @@ const schema = new Schema({
     required: false,
     type: String,
   },
-  department: {
-    required: false,
-    type: String,
-  },
   photo: {
-    required: false,
-    type: String,
-  },
-  serial: {
     required: false,
     type: String,
   },
   paymentType: {
     required: false,
     type: String,
-  },
-  comment: {
-    required: false,
-    type: Array,
   },
   createdAt: {
     type: Date,
@@ -45,8 +33,8 @@ const schema = new Schema({
     type: Boolean,
     required: false,
   },
-  absenceFaculty: {
-    type: String,
+  firstTimeLogin: {
+    type: Boolean,
     required: false,
   },
 });

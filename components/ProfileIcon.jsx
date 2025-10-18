@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 import profileIconDark from "../public/profileIconDark.png";
 import profileIconLight from "../public/profileIconLight.png";
 import Image from "next/image";
+import colors from "@/app/color/color";
 
-const ProfileIcon = () => {
+const ProfileIcon = ({ active }) => {
   const pathname = usePathname();
   const { theme } = useTheme();
   const { auth } = useAuth();
@@ -18,10 +19,14 @@ const ProfileIcon = () => {
       {auth ? (
         <Link href="/profile">
           <div
-            className={`sm:w-[40px] sm:h-[40px] h-[30px] w-[30px] rounded-full  ${
+            className={`border-[2px] lg:h-[40px] lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] rounded-full  ${
               theme
-                ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black"
-                : "bg-[#111111] hover:bg-[#000000] text-white"
+                ? active == "profile"
+                  ? `bg-[#dddddd] hover:bg-[#eeeeee] text-black ${colors.keyColorBorder}`
+                  : `bg-[#dddddd] hover:bg-[#eeeeee] text-black border-[#333333]`
+                : active == "profile"
+                ? `bg-[#000000] hover:bg-[#222222] text-white ${colors.keyColorBorder}`
+                : `bg-[#000000] hover:bg-[#222222] text-white border-[#999999]`
             } relative overflow-hidden`}
             onClick={handleClick}
           >
@@ -31,7 +36,7 @@ const ProfileIcon = () => {
                   {" "}
                   <Image
                     priority
-                    src={theme ? profileIconLight : profileIconDark }
+                    src={theme ? profileIconLight : profileIconDark}
                     alt={theme ? "Proflie Icon Light" : "Proflie Icon Dark"}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
@@ -49,10 +54,14 @@ const ProfileIcon = () => {
         <Link href={pathname == "/login" ? "/register" : "/login"}>
           <div className="flex justify-center items-center h-full">
             <div
-              className={`rounded-full  lg:h-[40px] shadow-md lg:w-[40px] w-[35px] h-[35px] relative ${
+              className={`rounded-full border-[2px] lg:h-[40px] lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
                 theme
-                  ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black"
-                  : "bg-[#111111] hover:bg-[#000000] text-white"
+                  ? active == "profile"
+                    ? `bg-[#dddddd] hover:bg-[#eeeeee] text-black ${colors.keyColorBorder}`
+                    : `bg-[#dddddd] hover:bg-[#eeeeee] text-black border-[#333333]`
+                  : active == "profile"
+                  ? `bg-[#000000] hover:bg-[#222222] text-white ${colors.keyColorBorder}`
+                  : `bg-[#000000] hover:bg-[#222222] text-white border-[#999999]`
               }`}
             >
               <div className="h-full w-full relative">

@@ -5,4 +5,5 @@ export const AuthContext = createContext();
 
 export const ThemeContext = createContext();
 
-export const FacultyContext = createContext();
+export const ResponseContext = createContext();
+

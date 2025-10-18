@@ -6,9 +6,10 @@ import { ThemeContext } from '../contexts';
 
 export default function ThemeProvider({children}) {
     const [theme, setTheme] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return(
-        <ThemeContext.Provider value={{theme, setTheme}}>
+        <ThemeContext.Provider value={{theme, setTheme, sidebarOpen, setSidebarOpen}}>
             {children}
         </ThemeContext.Provider>
     )

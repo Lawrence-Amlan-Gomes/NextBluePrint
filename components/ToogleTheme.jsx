@@ -9,10 +9,10 @@ function ToogleTheme() {
   return (
     <div className="flex justify-center items-center h-full">
       <div
-        className={`rounded-full  lg:h-[40px] lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
+        className={`rounded-full border-[2px] lg:h-[40px] lg:w-[40px] sm:w-[35px] sm:h-[35px] h-[30px] w-[30px] relative ${
           theme
-            ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black"
-            : "bg-[#111111] hover:bg-[#000000] text-white"
+            ? "bg-[#dddddd] hover:bg-[#eeeeee] text-black border-[#333333]"
+            : "bg-[#000000] hover:bg-[#222222] text-white border-[#999999]"
         }`}
         onClick={() => setTheme((prev) => !prev)}
       >
